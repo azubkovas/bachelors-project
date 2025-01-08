@@ -21,7 +21,11 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        System.out.println("Non-essential changes:");
+        System.out.println("Non-essential changes:\n");
+        System.out.println("Variable rename casualties:");
+        printChanges(findVariableRenameCasualties("data/rename_casualties/BeforeVariableRename.java",
+                "data/rename_casualties/AfterVariableRename.java"));
+        System.out.println("\nMethod rename casualties:");
         printChanges(findMethodRenameCasualties("data/rename_casualties/BeforeMethodRename.java",
                 "data/rename_casualties/AfterMethodRename.java"));
     }
@@ -50,12 +54,18 @@ public class Main {
                 if (update.getNode().getParent().getType().name.equals("VariableDeclarationFragment") && update.getNode().getParent().getChildPosition(update.getNode()) == 0) {
                     String prevName = update.getNode().getLabel();
                     String newName = update.getValue();
+                    Pair<Integer, Integer> declLocation = PositionConverter.getLineAndColumn(beforeFilePath, update.getNode().getParent().getParent().getPos());
                     for (Action act : actions) {
-                        if (act instanceof Update upd && upd != update && upd.getNode().getParents()
-                                .contains(update.getNode().getParent().getParent().getParent()) &&
-                                upd.getNode().getLabel().equals(prevName) &&
+                        if (act instanceof Update upd && upd != update && upd.getNode().getLabel().equals(prevName) &&
                                 upd.getValue().equals(newName)) {
-                            renameCasualtyChanges.add(upd);
+                            Pair<Integer, Integer> usageLocation = PositionConverter.getLineAndColumn(beforeFilePath, upd.getNode().getPos());
+                            String queryOutput = JoernCient.executeQuery(("cpg.identifier.lineNumber(%d)." +
+                                    "columnNumber(%d).head.refsTo.toSet == cpg.local.lineNumber(%d).columnNumber(%d).toSet").formatted(
+                                    usageLocation.first, usageLocation.second, declLocation.first, declLocation.second
+                            ), beforeFilePath);
+                            if (queryOutput.trim().equals("true")) {
+                                renameCasualtyChanges.add(upd);
+                            }
                         }
                     }
                 }

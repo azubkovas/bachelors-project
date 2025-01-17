@@ -1,4 +1,4 @@
-package org.example.util;
+package bachelors.project.util;
 
 import com.github.gumtreediff.actions.EditScript;
 import com.github.gumtreediff.matchers.MappingStore;

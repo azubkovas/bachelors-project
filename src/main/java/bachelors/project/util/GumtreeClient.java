@@ -1,4 +1,4 @@
-package org.example.util;
+package bachelors.project.util;
 
 import com.github.gumtreediff.actions.EditScriptGenerator;
 import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;

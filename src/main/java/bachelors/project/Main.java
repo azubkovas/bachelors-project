@@ -1,4 +1,4 @@
-package org.example;
+package bachelors.project;
 
 import com.github.gumtreediff.actions.EditScript;
 import com.github.gumtreediff.actions.model.Action;
@@ -7,10 +7,10 @@ import com.github.gumtreediff.actions.model.Move;
 import com.github.gumtreediff.actions.model.Update;
 import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.utils.Pair;
-import org.example.util.DiffData;
-import org.example.util.GumtreeClient;
-import org.example.util.JoernCient;
-import org.example.util.PositionConverter;
+import bachelors.project.util.DiffData;
+import bachelors.project.util.GumtreeClient;
+import bachelors.project.util.JoernCient;
+import bachelors.project.util.PositionConverter;
 
 import java.io.IOException;
 import java.util.ArrayList;

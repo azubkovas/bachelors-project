@@ -19,7 +19,7 @@ public class GumtreeClient {
         Matcher defaultMatcher = Matchers.getInstance().getMatcher();
         MappingStore mappings = defaultMatcher.match(before, after);
         EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
-        return new DiffData(before, after, mappings, editScriptGenerator.computeActions(mappings));
+        return new DiffData(before, after, beforeFilePath, afterFilePath, mappings, editScriptGenerator.computeActions(mappings));
     }
 }
 

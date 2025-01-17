@@ -1,6 +1,7 @@
 package bachelors.project;
 
 import bachelors.project.change.finder.NonEssMethodRenameFinder;
+import bachelors.project.change.finder.NonEssThisAdditionToFieldFinder;
 import bachelors.project.change.finder.NonEssThisRemovalFromFieldFinder;
 import bachelors.project.change.finder.NonEssVariableRenameFinder;
 import com.github.gumtreediff.actions.model.Action;
@@ -22,6 +23,11 @@ public class Main {
         System.out.println("\nTrivial this keyword removal from field access changes:");
         printChanges(new NonEssThisRemovalFromFieldFinder().findChanges(GumtreeClient.getDiffData("data/trivial_keywords/WithThisKeyword.java",
                 "data/trivial_keywords/WithoutThisKeyword.java")));
+
+        System.out.println("\nTrivial this keyword addition to field access changes:");
+        printChanges(new NonEssThisAdditionToFieldFinder().findChanges(GumtreeClient.getDiffData("data/trivial_keywords/WithoutThisKeyword.java",
+                "data/trivial_keywords/WithThisKeyword.java")));
+
     }
 
     private static void printChanges(List<Action> changes) {

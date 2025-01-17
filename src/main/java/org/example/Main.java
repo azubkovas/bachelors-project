@@ -1,33 +1,34 @@
 package org.example;
 
 import com.github.gumtreediff.actions.EditScript;
-import com.github.gumtreediff.actions.EditScriptGenerator;
-import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
 import com.github.gumtreediff.actions.model.Action;
+import com.github.gumtreediff.actions.model.Delete;
+import com.github.gumtreediff.actions.model.Move;
 import com.github.gumtreediff.actions.model.Update;
-import com.github.gumtreediff.client.Run;
-import com.github.gumtreediff.gen.TreeGenerators;
-import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.matchers.Matcher;
-import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.utils.Pair;
+import org.example.util.DiffData;
+import org.example.util.GumtreeClient;
 import org.example.util.JoernCient;
 import org.example.util.PositionConverter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         System.out.println("Non-essential changes:\n");
-        System.out.println("Variable rename casualties:");
-        printChanges(findVariableRenameCasualties("data/rename_casualties/BeforeVariableRename.java",
-                "data/rename_casualties/AfterVariableRename.java"));
-        System.out.println("\nMethod rename casualties:");
-        printChanges(findMethodRenameCasualties("data/rename_casualties/BeforeMethodRename.java",
-                "data/rename_casualties/AfterMethodRename.java"));
+//        System.out.println("Variable rename casualties:");
+//        printChanges(findVariableRenameCasualties("data/rename_casualties/BeforeVariableRename.java",
+//                "data/rename_casualties/AfterVariableRename.java"));
+//        System.out.println("\nMethod rename casualties:");
+//        printChanges(findMethodRenameCasualties("data/rename_casualties/BeforeMethodRename.java",
+//                "data/rename_casualties/AfterMethodRename.java"));
+        System.out.println("\nTrivial this keyword removal from field access changes:");
+        printChanges(findTrivialThisKeywordRemovalFromFieldAccess("data/trivial_keywords/WithThisKeyword.java",
+                "data/trivial_keywords/WithoutThisKeyword.java"));
     }
 
     private static void printChanges(List<Action> changes) {
@@ -36,19 +37,9 @@ public class Main {
         }
     }
 
-    private static EditScript getEditScript(String beforeFilePath, String afterFilePath) throws IOException {
-        Run.initGenerators();
-        Tree before = TreeGenerators.getInstance().getTree(beforeFilePath).getRoot();
-        Tree after = TreeGenerators.getInstance().getTree(afterFilePath).getRoot();
-        Matcher defaultMatcher = Matchers.getInstance().getMatcher();
-        MappingStore mappings = defaultMatcher.match(before, after);
-        EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
-        return editScriptGenerator.computeActions(mappings);
-    }
-
     private static List<Action> findVariableRenameCasualties(String beforeFilePath, String afterFilePath) throws IOException {
         List<Action> renameCasualtyChanges = new ArrayList<>();
-        EditScript actions = getEditScript(beforeFilePath, afterFilePath);
+        EditScript actions = GumtreeClient.getDiffData(beforeFilePath, afterFilePath).getEditScript();
         for (Action action : actions) {
             if (action instanceof Update update) {
                 if (update.getNode().getParent().getType().name.equals("VariableDeclarationFragment") && update.getNode().getParent().getChildPosition(update.getNode()) == 0) {
@@ -76,7 +67,7 @@ public class Main {
 
     private static List<Action> findMethodRenameCasualties(String beforeFilePath, String afterFilePath) throws IOException {
         List<Action> renameCasualtyChanges = new ArrayList<>();
-        EditScript actions = getEditScript(beforeFilePath, afterFilePath);
+        EditScript actions = GumtreeClient.getDiffData(beforeFilePath, afterFilePath).getEditScript();
         for (Action action : actions) {
             if (action instanceof Update update) {
                 if (update.getNode().getParent().getType().name.equals("MethodDeclaration")) {
@@ -99,5 +90,31 @@ public class Main {
             }
         }
         return renameCasualtyChanges;
+    }
+
+    private static List<Action> findTrivialThisKeywordRemovalFromFieldAccess(String beforeFilePath, String afterFilePath) throws IOException {
+        List<Action> trivialThisKeywordChanges = new ArrayList<>();
+        DiffData diffData = GumtreeClient.getDiffData(beforeFilePath, afterFilePath);
+        EditScript actions = diffData.getEditScript();
+        for (Action action : actions) {
+            Optional<Action> parentDelete, siblingMove;
+            if (action instanceof Delete delete && delete.getNode().getType().name.equals("ThisExpression") &&
+                    delete.getNode().getParent().getType().name.equals("FieldAccess") && (parentDelete = actions.asList().stream().filter(act -> act instanceof Delete del && del.getNode() == delete.getNode().getParent()).findFirst()).isPresent() &&
+                    (siblingMove = actions.asList().stream().filter(act -> act instanceof Move mov && mov.getNode().getParent() == delete.getNode().getParent()).findFirst()).isPresent()) {
+                Pair<Integer, Integer> positionInBefore = PositionConverter.getLineAndColumn(beforeFilePath, parentDelete.get().getNode().getPos());
+                String queryOutputBefore = JoernCient.executeQuery("cpg.fieldAccess.lineNumber(%d).columnNumber(%d).head.referencedMember.head.typeDecl.fullName"
+                        .formatted(positionInBefore.first, positionInBefore.second), beforeFilePath);
+//                System.out.println(queryOutputBefore);
+                Tree equivalentNode = diffData.getMappings().getDstForSrc(siblingMove.get().getNode());
+                Pair<Integer, Integer> positionInAfter = PositionConverter.getLineAndColumn(afterFilePath, equivalentNode.getPos());
+                String queryOutputAfter = JoernCient.executeQuery("cpg.fieldAccess.lineNumber(%d).columnNumber(%d).head.referencedMember.head.typeDecl.fullName"
+                        .formatted(positionInAfter.first, positionInAfter.second), afterFilePath);
+//                System.out.println(queryOutputAfter);
+                if (queryOutputBefore.equals(queryOutputAfter)) {
+                    trivialThisKeywordChanges.addAll(List.of(delete, parentDelete.get(), siblingMove.get()));
+                }
+            }
+        }
+        return trivialThisKeywordChanges;
     }
 }

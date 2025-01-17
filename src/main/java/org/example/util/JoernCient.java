@@ -1,6 +1,8 @@
 package org.example.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -34,6 +36,9 @@ public class JoernCient {
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
         }
-        return Files.readString(Path.of("tmp/output.log"));
+        String queryOutput = Files.readString(Path.of("tmp/output.log"));
+        Files.deleteIfExists(Path.of("tmp/script.cpgql"));
+        Files.deleteIfExists(Path.of("tmp/output.log"));
+        return queryOutput;
     }
 }

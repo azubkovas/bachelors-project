@@ -16,6 +16,7 @@ dependencies {
     implementation 'com.github.gumtreediff:core:3.0.0'
     implementation 'com.github.gumtreediff:gen.python:3.0.0'
     implementation 'com.github.gumtreediff:gen.jdt:3.0.0'
+    implementation 'com.github.gumtreediff:gen.srcml:3.0.0'
 }
 
 test {

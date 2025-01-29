@@ -21,16 +21,16 @@ public class NonEssMethodRenameFinder extends ChangeFinder{
             if (action instanceof Update update && update.getNode().getParent().getType().name.equals("function")) {
                 String prevName = update.getNode().getLabel();
                 String newName = update.getValue();
-                Pair<Integer, Integer> declPosInFile = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), update.getNode().getPos());
-                String className = JoernCient.executeQuery("cpg.method.lineNumber(%d).head.typeDecl.fullName.head".formatted(declPosInFile.first), diffData.getBeforeFilePath());
+                Pair<Integer, Integer> declPosInFile = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), update.getNode().getParent().getPos());
+                String methodFullName = JoernCient.executeQuery("cpg.method.name(\"%s\").lineNumber(%d).head.fullName".formatted(prevName, declPosInFile.first), diffData.getBeforeFilePath()).trim();
                 for (Action act : actions) {
                     if (act instanceof Update upd && upd != update &&
                             upd.getNode().getParent().getType().name.equals("call") &&
                             upd.getNode().getLabel().equals(prevName) && upd.getValue().equals(newName)) {
-                        Pair<Integer, Integer> usagePosInFile = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), upd.getNode().getPos());
-                        String referencedClassName = JoernCient.executeQuery(("cpg.call.name(\"%s\").lineNumber(%d)." +
-                                "columnNumber(%d).head.callee.head.typeDecl.fullName.head").formatted(prevName, usagePosInFile.first, usagePosInFile.second), diffData.getBeforeFilePath());
-                        if (referencedClassName.trim().equals(className.trim())) {
+                        Pair<Integer, Integer> usagePosInFile = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), upd.getNode().getParent().getPos());
+                        String calledMethodFullName = JoernCient.executeQuery(("cpg.call.name(\"%s\").lineNumber(%d)." +
+                                "columnNumber(%d).head.methodFullName").formatted(prevName, usagePosInFile.first, usagePosInFile.second), diffData.getBeforeFilePath()).trim();
+                        if (calledMethodFullName.equals(methodFullName)) {
                             renameCasualtyChanges.add(upd);
                         }
                     }

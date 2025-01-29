@@ -18,21 +18,20 @@ public class NonEssMethodRenameFinder extends ChangeFinder{
         List<Action> renameCasualtyChanges = new ArrayList<>();
         EditScript actions = diffData.getEditScript();
         for (Action action : actions) {
-            if (action instanceof Update update) {
-                if (update.getNode().getParent().getType().name.equals("MethodDeclaration")) {
-                    String prevName = update.getNode().getLabel();
-                    String newName = update.getValue();
-                    String className = update.getNode().getParent().getParent().getChild(2).getLabel();
-                    for (Action act : actions) {
-                        if (act instanceof Update upd && upd != update &&
-                                upd.getNode().getParent().getType().name.equals("MethodInvocation") &&
-                                upd.getNode().getLabel().equals(prevName) && upd.getValue().equals(newName)) {
-                            Pair<Integer, Integer> pos = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), upd.getNode().getPos());
-                            String queryOutput = JoernCient.executeQuery(("cpg.call.name(\"%s\").lineNumber(%d)." +
-                                    "columnNumber(%d).head.callee.head.typeDecl.head.name == \"%s\"").formatted(prevName, pos.first, pos.second, className), diffData.getBeforeFilePath());
-                            if (queryOutput.trim().equals("true")) {
-                                renameCasualtyChanges.add(upd);
-                            }
+            if (action instanceof Update update && update.getNode().getParent().getType().name.equals("function")) {
+                String prevName = update.getNode().getLabel();
+                String newName = update.getValue();
+                Pair<Integer, Integer> declPosInFile = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), update.getNode().getPos());
+                String className = JoernCient.executeQuery("cpg.method.lineNumber(%d).head.typeDecl.fullName.head".formatted(declPosInFile.first), diffData.getBeforeFilePath());
+                for (Action act : actions) {
+                    if (act instanceof Update upd && upd != update &&
+                            upd.getNode().getParent().getType().name.equals("call") &&
+                            upd.getNode().getLabel().equals(prevName) && upd.getValue().equals(newName)) {
+                        Pair<Integer, Integer> usagePosInFile = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), upd.getNode().getPos());
+                        String referencedClassName = JoernCient.executeQuery(("cpg.call.name(\"%s\").lineNumber(%d)." +
+                                "columnNumber(%d).head.callee.head.typeDecl.fullName.head").formatted(prevName, usagePosInFile.first, usagePosInFile.second), diffData.getBeforeFilePath());
+                        if (referencedClassName.trim().equals(className.trim())) {
+                            renameCasualtyChanges.add(upd);
                         }
                     }
                 }

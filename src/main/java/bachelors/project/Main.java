@@ -23,8 +23,12 @@ public class Main {
                 "data/rename_casualties/AfterVariableRename.cpp")));
 
         System.out.println("\nMethod rename casualties:");
+        System.out.println("Java");
         printChanges(new NonEssMethodRenameFinder().findChanges(GumtreeClient.getDiffData("data/rename_casualties/BeforeMethodRename.java",
-                "data/rename_casualties/AfterMethodRename.java")));
+                "data/rename_casualties/AfterMethodRename.java", SrcmlJavaTreeGenerator.class)));
+        System.out.println("C++");
+        printChanges(new NonEssMethodRenameFinder().findChanges(GumtreeClient.getDiffData("data/rename_casualties/BeforeMethodRename.cpp",
+                "data/rename_casualties/AfterMethodRename.cpp")));
 
         System.out.println("\nTrivial this keyword removal from field access changes:");
         printChanges(new NonEssThisRemovalFromFieldFinder().findChanges(GumtreeClient.getDiffData("data/trivial_keywords/WithThisKeyword.java",

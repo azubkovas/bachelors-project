@@ -1,12 +1,16 @@
 package bachelors.project.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 public class JoernCient {
     public static String executeQuery(String query, String filePath) throws IOException {
+        Files.deleteIfExists(Path.of("tmp/script.cpgql"));
+        Files.deleteIfExists(Path.of("tmp/output.log"));
         String script = """
                 import java.nio.file.{Files, Path, StandardOpenOption}
                 import replpp.Operators.#>
@@ -35,8 +39,6 @@ public class JoernCient {
             throw new RuntimeException(ex);
         }
         String queryOutput = Files.readString(Path.of("tmp/output.log"));
-        Files.deleteIfExists(Path.of("tmp/script.cpgql"));
-        Files.deleteIfExists(Path.of("tmp/output.log"));
         return queryOutput;
     }
 }

@@ -14,6 +14,7 @@ public class Main {
         DiffData diffData = GumTreeClient.getDiffData(beforeFilePath, afterFilePath);
         ChangeFinder changeFinder = null;
         List<Action> changes = changeFinder.findChanges(diffData);
+        printChanges(changes);
     }
 
     private static void printChanges(List<Action> changes) {

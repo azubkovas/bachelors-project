@@ -48,4 +48,16 @@ public class NonEssVariableRenameFinderTest {
         assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 91 && upd.getValue().equals("a")));
         assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 120 && upd.getValue().equals("b")));
     }
+
+    @Test
+    public void testFindChangesWithCsFile() throws IOException {
+        NonEssVariableRenameFinder finder = new NonEssVariableRenameFinder();
+        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/c#/BeforeVariableRename.cs", "src/test/data/rename_casualties/c#/AfterVariableRename.cs");
+
+        List<Action> res = finder.findChanges(diffData);
+
+        assertEquals(2, res.size());
+        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 139 && upd.getValue().equals("a")));
+        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 143 && upd.getValue().equals("a")));
+    }
 }

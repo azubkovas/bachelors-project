@@ -14,7 +14,7 @@ public class NonEssVariableRenameFinderTest {
     @Test
     public void testFindChangesWithJavaFile() throws IOException {
         NonEssVariableRenameFinder finder = new NonEssVariableRenameFinder();
-        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/BeforeVariableRename.java", "src/test/data/rename_casualties/AfterVariableRename.java");
+        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/java/BeforeVariableRename.java", "src/test/data/rename_casualties/java/AfterVariableRename.java");
 
         List<Action> res = finder.findChanges(diffData);
 
@@ -26,12 +26,26 @@ public class NonEssVariableRenameFinderTest {
     @Test
     public void testFindChangesWithCppFile() throws IOException {
         NonEssVariableRenameFinder finder = new NonEssVariableRenameFinder();
-        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/BeforeVariableRename.cpp", "src/test/data/rename_casualties/AfterVariableRename.cpp");
+        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/c++/BeforeVariableRename.cpp", "src/test/data/rename_casualties/c++/AfterVariableRename.cpp");
 
         List<Action> res = finder.findChanges(diffData);
 
         assertEquals(2, res.size());
         assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 76 && upd.getValue().equals("y1")));
         assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 80 && upd.getValue().equals("y1")));
+    }
+
+    @Test
+    public void testFindChangesWithCFile() throws IOException {
+        NonEssVariableRenameFinder finder = new NonEssVariableRenameFinder();
+        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/c/BeforeVariableRename.c", "src/test/data/rename_casualties/c/AfterVariableRename.c");
+
+        List<Action> res = finder.findChanges(diffData);
+
+        assertEquals(4, res.size());
+        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 60 && upd.getValue().equals("a")));
+        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 64 && upd.getValue().equals("a")));
+        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 91 && upd.getValue().equals("a")));
+        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 120 && upd.getValue().equals("b")));
     }
 }

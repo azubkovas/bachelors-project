@@ -16,7 +16,7 @@ class NonEssMethodRenameFinderTest {
     @Test
     void testFindChangesWithJavaFile() throws IOException {
         NonEssMethodRenameFinder finder = new NonEssMethodRenameFinder();
-        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/BeforeMethodRename.java", "src/test/data/rename_casualties/AfterMethodRename.java");
+        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/java/BeforeMethodRename.java", "src/test/data/rename_casualties/java/AfterMethodRename.java");
 
         List<Action> res = finder.findChanges(diffData);
 
@@ -28,7 +28,7 @@ class NonEssMethodRenameFinderTest {
     @Test
     void testFindChangesWithCppFile() throws IOException {
         NonEssMethodRenameFinder finder = new NonEssMethodRenameFinder();
-        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/BeforeMethodRename.cpp", "src/test/data/rename_casualties/AfterMethodRename.cpp");
+        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/c++/BeforeMethodRename.cpp", "src/test/data/rename_casualties/c++/AfterMethodRename.cpp");
 
         List<Action> res = finder.findChanges(diffData);
 

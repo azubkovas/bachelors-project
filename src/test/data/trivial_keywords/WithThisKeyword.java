@@ -1,8 +1,7 @@
 public class MyClass {
-    int x, y;
+    int x;
 
-    public MyClass(int a, int b) {
+    public MyClass(int a) {
         this.x = a;
-        this.y = b;
     }
 }

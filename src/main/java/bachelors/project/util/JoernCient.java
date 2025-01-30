@@ -21,6 +21,7 @@ public class JoernCient {
                       importCode("%s")
                    }
                    (%s) #> "tmp/output.log"
+                   close
                 }
                 """.formatted(filePath, filePath, query);
         Files.writeString(Path.of("tmp/script.cpgql"), script, StandardOpenOption.CREATE, StandardOpenOption.WRITE);

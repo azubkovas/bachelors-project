@@ -36,4 +36,15 @@ class NonEssMethodRenameFinderTest {
         assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("getX") && upd.getNode().getPos() == 223 && upd.getValue().equals("readX")));
         assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("getY") && upd.getNode().getPos() == 232 && upd.getValue().equals("readY")));
     }
+
+    @Test
+    void testFindChangesWithCFile() throws IOException {
+        NonEssMethodRenameFinder finder = new NonEssMethodRenameFinder();
+        DiffData diffData = GumTreeClient.getDiffData("src/test/data/rename_casualties/c/BeforeFunctionRename.c", "src/test/data/rename_casualties/c/AfterFunctionRename.c");
+
+        List<Action> res = finder.findChanges(diffData);
+
+        assertEquals(1, res.size());
+        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("greet") && upd.getNode().getPos() == 86 && upd.getValue().equals("sayHello")));
+    }
 }

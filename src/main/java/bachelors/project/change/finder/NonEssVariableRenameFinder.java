@@ -22,13 +22,14 @@ public class NonEssVariableRenameFinder extends ChangeFinder {
                 String prevName = update.getNode().getLabel();
                 String newName = update.getValue();
                 Pair<Integer, Integer> declLocation = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), update.getNode().getParent().getParent().getPos());
+                String declNode = JoernCient.findDeclNode(update.getNode().getParent(), diffData.getBeforeFilePath());
                 for (Action act : actions) {
                     if (act instanceof Update upd && upd != update && upd.getNode().getLabel().equals(prevName) &&
                             upd.getValue().equals(newName)) {
                         Pair<Integer, Integer> usageLocation = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), upd.getNode().getPos());
-                        String queryOutput = JoernCient.executeQuery(("cpg.identifier.lineNumber(%d)." +
-                                "columnNumber(%d).head.refsTo.toSet == cpg.local.lineNumber(%d).toSet").formatted(
-                                usageLocation.first, usageLocation.second, declLocation.first
+                        String usageNode = JoernCient.findIdentifierNode(upd.getNode(), diffData.getBeforeFilePath());
+                        String queryOutput = JoernCient.executeQuery(("%s.toSet == %s.toSet").formatted(
+                                usageNode, declNode
                         ), diffData.getBeforeFilePath());
                         if (queryOutput.trim().equals("true")) {
                             renameCasualtyChanges.add(upd);

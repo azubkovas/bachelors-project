@@ -15,6 +15,7 @@ import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.Tree;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class GumTreeClient {
     // Assumption: before and after files are of the same type.
@@ -46,6 +47,20 @@ public class GumTreeClient {
         MappingStore mappings = defaultMatcher.match(before, after);
         EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
         return new DiffData(before, after, beforeFilePath, afterFilePath, mappings, editScriptGenerator.computeActions(mappings));
+    }
+
+    public static Optional<String> getClassName(Tree node) {
+        if (node.getType().name.equals("class")) {
+            return Optional.of(node.getChildren().stream().filter(x -> x.getType().name.equals("name")).findFirst().get().getLabel());
+        }
+        return node.getParents().stream().filter(x -> x.getType().name.equals("class")).findFirst().flatMap(GumTreeClient::getClassName);
+    }
+
+    public static Optional<String> getFunctionName(Tree node) {
+        if (node.getType().name.equals("function")) {
+            return Optional.of(node.getChildren().stream().filter(x -> x.getType().name.equals("name")).findFirst().get().getLabel());
+        }
+        return node.getParents().stream().filter(x -> x.getType().name.equals("function")).findFirst().flatMap(GumTreeClient::getFunctionName);
     }
 
 }

@@ -49,19 +49,8 @@ public class GumTreeClient {
         return new DiffData(before, after, beforeFilePath, afterFilePath, mappings, editScriptGenerator.computeActions(mappings));
     }
 
-    public static Optional<String> getClassName(Tree node) {
-        if (node.getType().name.equals("class")) {
-            return Optional.of(node.getChildren().stream().filter(x -> x.getType().name.equals("name")).findFirst().get().getLabel());
-        }
-        return node.getParents().stream().filter(x -> x.getType().name.equals("class")).findFirst().flatMap(GumTreeClient::getClassName);
+    public static Tree getFirstChildOfType(Tree parent, String type) {
+        return parent.getChildren().stream().filter(child -> child.getType().name.equals(type)).findFirst().orElse(null);
     }
-
-    public static Optional<String> getFunctionName(Tree node) {
-        if (node.getType().name.equals("function")) {
-            return Optional.of(node.getChildren().stream().filter(x -> x.getType().name.equals("name")).findFirst().get().getLabel());
-        }
-        return node.getParents().stream().filter(x -> x.getType().name.equals("function")).findFirst().flatMap(GumTreeClient::getFunctionName);
-    }
-
 }
 

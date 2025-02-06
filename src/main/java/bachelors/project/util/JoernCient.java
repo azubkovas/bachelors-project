@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class JoernCient {
     public static String executeQuery(String query, String filePath) throws IOException {
@@ -44,35 +46,69 @@ public class JoernCient {
         return queryOutput;
     }
 
-    // Returns query string that can be used to obtain the equivalent node in Joern todo: deal with possible multiple outputs
-    public static String findDeclNode(Tree node, String filePath) {
-        //cpg.declaration.name("x").where(_.method.name("Main").typeDecl.name("Program").filename("BeforeVariableRename.cs")).head
-        if (node.getType().name.equals("decl")) {
-            Optional<String> functionName = GumTreeClient.getFunctionName(node);
-            Optional<String> className = GumTreeClient.getClassName(node);
-            String name = node.getChildren().stream().filter(x -> x.getType().name.equals("name")).findFirst().get().getLabel();
-            return "cpg.declaration.name(\"%s\").where(_.method.name(\"%s\").typeDecl.name(\"%s\").filename(\"%s\"))".formatted(
-                    name,
-                    functionName.get(),
-                    className.orElse("<global>"),
-                    filePath
-            );
-        } else throw new IllegalArgumentException("Node type should be 'decl'");
+    // Returns query string that can be used to obtain the equivalent node in Joern todo: deal with possible multiple outputs, add support for multiple files
+    public static String findLocal(Tree node, String relativeFilePath, String name) {
+        List<String> steps = getSteps(node);
+        String condition = steps.stream().reduce("_", (a, b) -> a + b);
+        return "cpg.local.name(\"%s\").where(%s)".formatted(name, condition);
     }
 
-    public static String findIdentifierNode(Tree node, String filePath) {
-        //cpg.identifier.name("x").where(_.method.name("Main").typeDecl.name("Program").filename("BeforeVariableRename.cs")).head
-        if (node.getType().name.equals("name")) {
-            Optional<String> functionName = GumTreeClient.getFunctionName(node);
-            Optional<String> className = GumTreeClient.getClassName(node);
-            String name = node.getLabel();
-            return "cpg.identifier.name(\"%s\").where(_.method.name(\"%s\").typeDecl.name(\"%s\").filename(\"%s\"))".formatted(
-                    name,
-                    functionName.get(),
-                    className.orElse("<global>"),
-                    filePath
-            );
-        } else throw new IllegalArgumentException("Node type should be 'name'");
+    public static String findIdentifier(Tree node, String relativeFilePath, String name) {
+        List<String> steps = getSteps(node);
+        String condition = steps.stream().reduce("_", (a, b) -> a + b);
+        return "cpg.identifier.name(\"%s\").where(%s)".formatted(name, condition);
+    }
+
+    private static List<String> getSteps(Tree node) {
+        List<String> steps = new ArrayList<>();
+        List<Tree> parents = node.getParents();
+        for (int i = 0; i < parents.size(); i++) {
+            Tree parent = parents.get(i);
+            String name;
+            switch (parent.getType().name) {
+                case "block":
+                    steps.add(".astParent.isBlock");
+                    break;
+                case "function":
+                    name = GumTreeClient.getFirstChildOfType(parent, "name").getLabel();
+                    steps.add(".astParent.isMethod.name(\"%s\")".formatted(name));
+                    break;
+                case "class":
+                    assert steps.get(steps.size() - 1).equals(".astParent.isBlock");
+                    steps.remove(steps.size() - 1);
+                    name = GumTreeClient.getFirstChildOfType(parent, "name").getLabel();
+                    steps.add(".astParent.isTypeDecl.name(\"%s\")".formatted(name));
+                    break;
+                case "call":
+                    name = GumTreeClient.getFirstChildOfType(parent, "name").getLabel();
+                    steps.add(".astParent.isCall.name(\"%s\")".formatted(name));
+                    break;
+                case "if":
+                    steps.add(".astParent.isControlStructure.controlStructureType(\"IF\")");
+                    break;
+                case "else":
+                    steps.add(".astParent.isControlStructure.controlStructureType(\"ELSE\")");
+                    break;
+                case "while":
+                    steps.add(".astParent.isControlStructure.controlStructureType(\"WHILE\")");
+                    break;
+                case "for":
+                    steps.add(".astParent.isControlStructure.controlStructureType(\"FOR\")");
+                    break;
+                case "expr":
+                    Tree operator = GumTreeClient.getFirstChildOfType(parent, "operator");
+                    if (operator != null && Set.of("+", "-", "*", "/", "%", "//").contains(operator.getLabel())) {
+                        int pos = parent.getChildPosition((i > 0) ? parents.get(i - 1) : node);
+                        assert pos != -1;
+                        steps.add(".order(%d).astParent.isCall".formatted((pos == 0) ? 1 : 2));
+                    }
+                    break;
+                case "init":
+                    steps.add(".astParent.isCall");
+                    break;
+            }
+        }
+        return steps;
     }
 
 }

@@ -15,30 +15,13 @@ import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.Tree;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.function.Predicate;
 
 public class GumTreeClient {
     // Assumption: before and after files are of the same type.
     public static DiffData getDiffData(String beforeFilePath, String afterFilePath) throws IOException {
-        TreeGenerator generator;
-        if (beforeFilePath.endsWith(".java")) {
-            generator = new SrcmlJavaTreeGenerator();
-        }
-        else if (beforeFilePath.endsWith(".cpp")) {
-            generator = new SrcmlCppTreeGenerator();
-        }
-        else if (beforeFilePath.endsWith(".c") || beforeFilePath.endsWith(".h")) {
-            generator = new SrcmlCTreeGenerator();
-        }
-        else if (beforeFilePath.endsWith(".cs")) {
-            generator = new SrcmlCsTreeGenerator();
-        }
-        else {
-            Run.initGenerators();
-            generator = TreeGenerators.getInstance().get(beforeFilePath);
-        }
-        Tree before = generator.generateFrom().file(beforeFilePath).getRoot();
-        Tree after = generator.generateFrom().file(afterFilePath).getRoot();
+        Tree before = getTree(beforeFilePath);
+        Tree after = getTree(afterFilePath);
         return getDiffData(beforeFilePath, afterFilePath, before, after);
     }
 
@@ -51,6 +34,36 @@ public class GumTreeClient {
 
     public static Tree getFirstChildOfType(Tree parent, String type) {
         return parent.getChildren().stream().filter(child -> child.getType().name.equals(type)).findFirst().orElse(null);
+    }
+
+    public static Tree getTree(String filePath) throws IOException {
+        TreeGenerator generator;
+        if (filePath.endsWith(".java")) {
+            generator = new SrcmlJavaTreeGenerator();
+        }
+        else if (filePath.endsWith(".cpp")) {
+            generator = new SrcmlCppTreeGenerator();
+        }
+        else if (filePath.endsWith(".c") || filePath.endsWith(".h")) {
+            generator = new SrcmlCTreeGenerator();
+        }
+        else if (filePath.endsWith(".cs")) {
+            generator = new SrcmlCsTreeGenerator();
+        }
+        else {
+            Run.initGenerators();
+            generator = TreeGenerators.getInstance().get(filePath);
+        }
+        return generator.generateFrom().file(filePath).getRoot();
+    }
+
+    public static Tree findFirst(Tree tree, Predicate<Tree> predicate) {
+        for (Tree next : tree.breadthFirst()) {
+            if (predicate.test(next)) {
+                return next;
+            }
+        }
+        return null;
     }
 }
 

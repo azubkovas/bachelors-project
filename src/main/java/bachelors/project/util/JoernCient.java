@@ -2,7 +2,9 @@ package bachelors.project.util;
 
 import com.github.gumtreediff.tree.Tree;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -48,18 +50,26 @@ public class JoernCient {
 
     // Returns query string that can be used to obtain the equivalent node in Joern todo: deal with possible multiple outputs, add support for multiple files
     public static String findLocal(Tree node, String relativeFilePath, String name) {
-        List<String> steps = getSteps(node);
-        String condition = steps.stream().reduce("_", (a, b) -> a + b);
+        String condition = getParentCondition(node);
         return "cpg.local.name(\"%s\").where(%s)".formatted(name, condition);
     }
 
     public static String findIdentifier(Tree node, String relativeFilePath, String name) {
-        List<String> steps = getSteps(node);
-        String condition = steps.stream().reduce("_", (a, b) -> a + b);
+        String condition = getParentCondition(node);
         return "cpg.identifier.name(\"%s\").where(%s)".formatted(name, condition);
     }
 
-    private static List<String> getSteps(Tree node) {
+    public static String findMethod(Tree node, String relativeFilePath, String name) {
+        String condition = getParentCondition(node);
+        return "cpg.method.name(\"%s\").where(%s)".formatted(name, condition);
+    }
+
+    public static String findCall(Tree node, String relativeFilePath, String name) {
+        String condition = getParentCondition(node);
+        return "cpg.call.name(\"%s\").where(%s)".formatted(name, condition);
+    }
+
+    private static String getParentCondition(Tree node) {
         List<String> steps = new ArrayList<>();
         List<Tree> parents = node.getParents();
         for (int i = 0; i < parents.size(); i++) {
@@ -103,12 +113,18 @@ public class JoernCient {
                         steps.add(".order(%d).astParent.isCall".formatted((pos == 0) ? 1 : 2));
                     }
                     break;
+                case "return":
+                    steps.add(".astParent.isReturn");
+                    break;
                 case "init":
                     steps.add(".astParent.isCall");
                     break;
             }
         }
-        return steps;
+        if (steps.isEmpty()) {
+            return "x => x";
+        }
+        return steps.stream().reduce("_", (a, b) -> a + b);
     }
 
 }

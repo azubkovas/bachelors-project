@@ -1,7 +1,7 @@
 package bachelors.project;
 
 import bachelors.project.change.finder.ChangeFinder;
-import bachelors.project.change.finder.NonEssVariableRenameFinder;
+import bachelors.project.repr.Definition;
 import bachelors.project.util.DiffData;
 import bachelors.project.util.GumTreeClient;
 import com.github.gumtreediff.actions.model.Action;
@@ -11,11 +11,12 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        String beforeFilePath = "src/test/data/rename_casualties/BeforeVariableRename.java";
-        String afterFilePath = "src/test/data/rename_casualties/AfterVariableRename.java";
-        DiffData diffData = GumTreeClient.getDiffData(beforeFilePath, afterFilePath);
-        ChangeFinder changeFinder = new NonEssVariableRenameFinder();
-        List<Action> nonEssChanges = changeFinder.findChanges(diffData);
+        String prePatchRevisionPath = "";
+        String postPatchRevisionPath = "";
+        String nonEssentialChangeDefinitionsFilePath = "";
+        List<Definition> definitions = Definition.getDefinitions(nonEssentialChangeDefinitionsFilePath);
+        DiffData diffData = GumTreeClient.getDiffData(prePatchRevisionPath, postPatchRevisionPath);
+        List<Action> nonEssChanges = ChangeFinder.findChanges(diffData, definitions);
         printChanges(nonEssChanges);
     }
 

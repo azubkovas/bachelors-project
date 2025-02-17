@@ -10,7 +10,7 @@ class GumTreeClientTest {
 
     @Test
     void testGetDiffData() {
-        DiffData diffData = GumTreeClient.getDiffData("/Users/arsenijuszubkovas/Documents/UoE/Year_4/Final Project/playground/prepatch_sample/SampleProject", "/Users/arsenijuszubkovas/Documents/UoE/Year_4/Final Project/playground/postpatchSample/SampleProject");
+        DiffData diffData = GumTreeClient.getDiffData("src/test/data/pre_patch/SampleProject", "src/test/data/post_patch/SampleProject");
         assertEquals(1, diffData.getAllActions().size());
     }
 }

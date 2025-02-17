@@ -1,45 +1,33 @@
 package bachelors.project.util;
 
-import com.github.gumtreediff.actions.EditScript;
-import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.tree.Tree;
+import com.github.gumtreediff.actions.model.Action;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DiffData {
-    private final Tree before, after;
-    private final String beforeFilePath, afterFilePath;
-    private final MappingStore mappings;
-    private final EditScript editScript;
-    
-    public DiffData(Tree before, Tree after, String beforeFilePath, String afterFilePath, MappingStore mappings, EditScript editScript) {
-        this.before = before;
-        this.after = after;
-        this.beforeFilePath = beforeFilePath;
-        this.afterFilePath = afterFilePath;
-        this.mappings = mappings;
-        this.editScript = editScript;
-    }
-    
-    public Tree getBefore() {
-        return before;
-    }
-    
-    public Tree getAfter() {
-        return after;
+    private final Map<String, SingleFileDiffData> fileDiffs;
+
+    public DiffData() {
+        fileDiffs = new HashMap<>();
     }
 
-    public String getBeforeFilePath() {
-        return beforeFilePath;
+    public SingleFileDiffData getSingleFileDiffData(String filePath) {
+        return fileDiffs.get(filePath);
     }
 
-    public String getAfterFilePath() {
-        return afterFilePath;
+    public void addSingleFileDiffData(SingleFileDiffData singleFileDiffData) {
+        if (singleFileDiffData == null) {
+            return;
+        }
+        fileDiffs.put(singleFileDiffData.getFilePathPair().first, singleFileDiffData);
     }
-    
-    public MappingStore getMappings() {
-        return mappings;
-    }
-    
-    public EditScript getEditScript() {
-        return editScript;
+
+    public List<Action> getAllActions() {
+        return fileDiffs.values().stream()
+                .map(SingleFileDiffData::getEditScript)
+                .flatMap(editScript -> editScript.asList().stream())
+                .toList();
     }
 }

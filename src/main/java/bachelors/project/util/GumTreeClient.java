@@ -13,23 +13,63 @@ import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.Tree;
+import com.github.gumtreediff.utils.Pair;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GumTreeClient {
-    // Assumption: before and after files are of the same type.
-    public static DiffData getDiffData(String beforeFilePath, String afterFilePath) throws IOException {
-        Tree before = getTree(beforeFilePath);
-        Tree after = getTree(afterFilePath);
-        return getDiffData(beforeFilePath, afterFilePath, before, after);
+    public static DiffData getDiffData(String prePatchRevisionPath, String postPatchRevisionPath) {
+        DiffData diffData = new DiffData();
+        List<Pair<String, String>> correspondingFilePairs = getCorrespondingFilePairs(prePatchRevisionPath, postPatchRevisionPath);
+        for (Pair<String, String> pair : correspondingFilePairs) {
+            diffData.addSingleFileDiffData(getSingleFileDiffData(pair.first, pair.second));
+        }
+        return diffData;
     }
 
-    private static DiffData getDiffData(String beforeFilePath, String afterFilePath, Tree before, Tree after) {
-        Matcher defaultMatcher = Matchers.getInstance().getMatcher();
-        MappingStore mappings = defaultMatcher.match(before, after);
-        EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
-        return new DiffData(before, after, beforeFilePath, afterFilePath, mappings, editScriptGenerator.computeActions(mappings));
+    private static SingleFileDiffData getSingleFileDiffData(String beforeFilePath, String afterFilePath) {
+        try {
+            Tree before = getTree(beforeFilePath);
+            Tree after = getTree(afterFilePath);
+            Matcher defaultMatcher = Matchers.getInstance().getMatcher();
+            MappingStore mappings = defaultMatcher.match(before, after);
+            EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
+            return new SingleFileDiffData(before, after, beforeFilePath, afterFilePath, mappings, editScriptGenerator.computeActions(mappings));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static List<Pair<String, String>> getCorrespondingFilePairs(String prePatchRevisionPath, String postPatchRevisionPath) {
+        List<Pair<String, String>> correspondingFilePairs = new ArrayList<>();
+        Path beforeRevPath = Paths.get(prePatchRevisionPath);
+        Path afterRevPath = Paths.get(postPatchRevisionPath);
+        try (Stream<Path> beforePaths = Files.walk(beforeRevPath);
+             Stream<Path> afterPaths = Files.walk(afterRevPath)) {
+            Set<Path> beforeFiles = beforePaths.filter(Files::isRegularFile).collect(Collectors.toSet());
+            Set<Path> afterFiles = afterPaths.filter(Files::isRegularFile).collect(Collectors.toSet());
+            for (Path beforeFile : beforeFiles) {
+                Path relativePath = beforeRevPath.relativize(beforeFile);
+                for (Path afterFile : afterFiles) {
+                    if (relativePath.equals(afterRevPath.relativize(afterFile))) {
+                        correspondingFilePairs.add(new Pair<String, String>(beforeFile.toString(), afterFile.toString()));
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return correspondingFilePairs;
     }
 
     public static Tree getFirstChildOfType(Tree parent, String type) {
@@ -40,17 +80,13 @@ public class GumTreeClient {
         TreeGenerator generator;
         if (filePath.endsWith(".java")) {
             generator = new SrcmlJavaTreeGenerator();
-        }
-        else if (filePath.endsWith(".cpp")) {
+        } else if (filePath.endsWith(".cpp")) {
             generator = new SrcmlCppTreeGenerator();
-        }
-        else if (filePath.endsWith(".c") || filePath.endsWith(".h")) {
+        } else if (filePath.endsWith(".c") || filePath.endsWith(".h")) {
             generator = new SrcmlCTreeGenerator();
-        }
-        else if (filePath.endsWith(".cs")) {
+        } else if (filePath.endsWith(".cs")) {
             generator = new SrcmlCsTreeGenerator();
-        }
-        else {
+        } else {
             Run.initGenerators();
             generator = TreeGenerators.getInstance().get(filePath);
         }

@@ -1,7 +1,7 @@
 package bachelors.project.repr;
 
 import bachelors.project.repr.changetype.ChangeType;
-import bachelors.project.repr.filter.Filter;
+import bachelors.project.repr.cond.Condition;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,8 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Definition {
-    ChangeType pattern;
-    List<Filter> filters;
+    private final ChangeType pattern;
+    private final Condition condition;
+
+    public Definition(ChangeType pattern, Condition condition) {
+        this.pattern = pattern;
+        this.condition = condition;
+    }
 
     public static List<Definition> getDefinitions(String filePath) {
         List<Definition> definitions = new ArrayList<Definition>();
@@ -28,5 +33,13 @@ public class Definition {
 
     public static Definition getDefinition(String defString) {
         return null; // todo
+    }
+
+    public ChangeType getPattern() {
+        return pattern;
+    }
+
+    public Condition getCondition() {
+        return condition;
     }
 }

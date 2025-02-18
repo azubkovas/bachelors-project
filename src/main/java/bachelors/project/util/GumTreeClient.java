@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 public class GumTreeClient {
     public static DiffData getDiffData(String prePatchRevisionPath, String postPatchRevisionPath) {
-        DiffData diffData = new DiffData();
+        DiffData diffData = new DiffData(prePatchRevisionPath, postPatchRevisionPath);
         List<Pair<String, String>> correspondingFilePairs = getCorrespondingFilePairs(prePatchRevisionPath, postPatchRevisionPath);
         for (Pair<String, String> pair : correspondingFilePairs) {
             diffData.addSingleFileDiffData(getSingleFileDiffData(pair.first, pair.second));
@@ -91,6 +91,7 @@ public class GumTreeClient {
             generator = TreeGenerators.getInstance().get(filePath);
         }
         return generator.generateFrom().file(filePath).getRoot();
+        // todo standardize names
     }
 
     public static Tree findFirst(Tree tree, Predicate<Tree> predicate) {

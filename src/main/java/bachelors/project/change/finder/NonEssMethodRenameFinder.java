@@ -1,18 +1,8 @@
 package bachelors.project.change.finder;
 
-import bachelors.project.util.DiffData;
-import bachelors.project.util.JoernCient;
-import bachelors.project.util.PositionConverter;
-import com.github.gumtreediff.actions.EditScript;
-import com.github.gumtreediff.actions.model.Action;
-import com.github.gumtreediff.actions.model.Update;
-import com.github.gumtreediff.utils.Pair;
+import bachelors.project.ChangeFinder;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-public class NonEssMethodRenameFinder extends ChangeFinder{
+public class NonEssMethodRenameFinder extends ChangeFinder {
 //    @Override
 //    public List<Action> findChanges(DiffData diffData) throws IOException {
 //        List<Action> renameCasualtyChanges = new ArrayList<>();

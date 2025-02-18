@@ -1,6 +1,5 @@
 package bachelors.project;
 
-import bachelors.project.change.finder.ChangeFinder;
 import bachelors.project.repr.Definition;
 import bachelors.project.util.DiffData;
 import bachelors.project.util.GumTreeClient;

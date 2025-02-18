@@ -1,16 +1,6 @@
 package bachelors.project.change.finder;
 
-import bachelors.project.util.DiffData;
-import bachelors.project.util.JoernCient;
-import bachelors.project.util.PositionConverter;
-import com.github.gumtreediff.actions.EditScript;
-import com.github.gumtreediff.actions.model.Action;
-import com.github.gumtreediff.actions.model.Update;
-import com.github.gumtreediff.utils.Pair;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import bachelors.project.ChangeFinder;
 
 public class NonEssVariableRenameFinder extends ChangeFinder {
 //    @Override

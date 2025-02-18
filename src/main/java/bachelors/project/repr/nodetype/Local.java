@@ -1,9 +1,8 @@
 package bachelors.project.repr.nodetype;
 
-public class Identifier extends NodeType {
-
+public class Local extends NodeType {
     @Override
     public String getStandardName() {
-        return "IDENTIFIER";
+        return "local";
     }
 }

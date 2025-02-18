@@ -1,21 +1,8 @@
 package bachelors.project.change.finder;
 
-import bachelors.project.util.DiffData;
-import bachelors.project.util.JoernCient;
-import bachelors.project.util.PositionConverter;
-import com.github.gumtreediff.actions.EditScript;
-import com.github.gumtreediff.actions.model.Action;
-import com.github.gumtreediff.actions.model.Delete;
-import com.github.gumtreediff.actions.model.Move;
-import com.github.gumtreediff.tree.Tree;
-import com.github.gumtreediff.utils.Pair;
+import bachelors.project.ChangeFinder;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-public class NonEssThisRemovalFromFieldFinder extends ChangeFinder{
+public class NonEssThisRemovalFromFieldFinder extends ChangeFinder {
 //    @Override
 //    public List<Action> findChanges(DiffData diffData) throws IOException {
 //        List<Action> trivialThisKeywordChanges = new ArrayList<>();

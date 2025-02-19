@@ -1,9 +1,0 @@
-package bachelors.project.repr.nodetype;
-
-public class Identifier extends NodeType {
-
-    @Override
-    public String getStandardName() {
-        return "IDENTIFIER";
-    }
-}

@@ -8,14 +8,14 @@ public class NonEssMethodRenameFinder extends ChangeFinder {
 //        List<Action> renameCasualtyChanges = new ArrayList<>();
 //        EditScript actions = diffData.getEditScript();
 //        for (Action action : actions) {
-//            if (action instanceof Update update && update.getNode().getParent().getType().name.equals("function")) {
+//            if (action instanceof UpdatePattern update && update.getNode().getParent().getType().name.equals("function")) {
 //                String prevName = update.getNode().getLabel();
 //                String newName = update.getValue();
 ////                Pair<Integer, Integer> declPosInFile = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), update.getNode().getParent().getPos());
 //                String methodDecl = JoernCient.findMethod(update.getNode().getParent(), diffData.getBeforeFilePath(), prevName);
 ////                String methodFullName = JoernCient.executeQuery("cpg.method.name(\"%s\").lineNumber(%d).head.fullName".formatted(prevName, declPosInFile.first), diffData.getBeforeFilePath()).trim();
 //                for (Action act : actions) {
-//                    if (act instanceof Update upd && upd != update &&
+//                    if (act instanceof UpdatePattern upd && upd != update &&
 //                            upd.getNode().getParent().getType().name.equals("call") &&
 //                            upd.getNode().getLabel().equals(prevName) && upd.getValue().equals(newName)) {
 ////                        Pair<Integer, Integer> usagePosInFile = PositionConverter.getLineAndColumn(diffData.getBeforeFilePath(), upd.getNode().getParent().getPos());

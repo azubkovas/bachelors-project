@@ -76,6 +76,11 @@ public class GumTreeClient {
         return parent.getChildren().stream().filter(child -> child.getType().name.equals(type)).findFirst().orElse(null);
     }
 
+    public static Tree getLastChildOfType(Tree parent, String type) {
+        List<Tree> listOfRelevantNodes =  parent.getChildren().stream().filter(child -> child.getType().name.equals(type)).toList();
+        return listOfRelevantNodes.isEmpty() ? null : listOfRelevantNodes.get(listOfRelevantNodes.size() - 1);
+    }
+
     public static Tree getTree(String filePath) throws IOException {
         TreeGenerator generator;
         if (filePath.endsWith(".java")) {

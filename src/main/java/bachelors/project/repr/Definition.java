@@ -1,6 +1,6 @@
 package bachelors.project.repr;
 
-import bachelors.project.repr.changetype.ChangeType;
+import bachelors.project.repr.changepattern.ChangePattern;
 import bachelors.project.repr.cond.Condition;
 
 import java.io.BufferedReader;
@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Definition {
-    private final ChangeType pattern;
+    private final ChangePattern pattern;
     private final Condition condition;
 
-    public Definition(ChangeType pattern, Condition condition) {
+    public Definition(ChangePattern pattern, Condition condition) {
         this.pattern = pattern;
         this.condition = condition;
     }
@@ -35,7 +35,7 @@ public class Definition {
         return null; // todo
     }
 
-    public ChangeType getPattern() {
+    public ChangePattern getPattern() {
         return pattern;
     }
 

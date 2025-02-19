@@ -19,8 +19,8 @@ public class NonEssVariableRenameFinderTest {
 //        List<Action> res = finder.findChanges(diffData);
 //
 //        assertEquals(2, res.size());
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 122 && upd.getValue().equals("y1")));
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 126 && upd.getValue().equals("y1")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 122 && upd.getValue().equals("y1")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 126 && upd.getValue().equals("y1")));
     }
 
     @Test
@@ -31,8 +31,8 @@ public class NonEssVariableRenameFinderTest {
 //        List<Action> res = finder.findChanges(diffData);
 //
 //        assertEquals(2, res.size());
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 76 && upd.getValue().equals("y1")));
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 80 && upd.getValue().equals("y1")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 76 && upd.getValue().equals("y1")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 80 && upd.getValue().equals("y1")));
     }
 
     @Test
@@ -43,10 +43,10 @@ public class NonEssVariableRenameFinderTest {
 //        List<Action> res = finder.findChanges(diffData);
 //
 //        assertEquals(4, res.size());
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 60 && upd.getValue().equals("a")));
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 64 && upd.getValue().equals("a")));
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 91 && upd.getValue().equals("a")));
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 120 && upd.getValue().equals("b")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 60 && upd.getValue().equals("a")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 64 && upd.getValue().equals("a")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 91 && upd.getValue().equals("a")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("y") && upd.getNode().getPos() == 120 && upd.getValue().equals("b")));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class NonEssVariableRenameFinderTest {
 //        List<Action> res = finder.findChanges(diffData);
 //
 //        assertEquals(2, res.size());
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 139 && upd.getValue().equals("a")));
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 143 && upd.getValue().equals("a")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 139 && upd.getValue().equals("a")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("x") && upd.getNode().getPos() == 143 && upd.getValue().equals("a")));
     }
 }

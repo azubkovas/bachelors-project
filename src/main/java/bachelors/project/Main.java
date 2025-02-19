@@ -7,6 +7,7 @@ import com.github.gumtreediff.actions.model.Action;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -15,11 +16,11 @@ public class Main {
         String nonEssentialChangeDefinitionsFilePath = "";
         List<Definition> definitions = Definition.getDefinitions(nonEssentialChangeDefinitionsFilePath);
         DiffData diffData = GumTreeClient.getDiffData(prePatchRevisionPath, postPatchRevisionPath);
-        List<Action> nonEssChanges = ChangeFinder.findChanges(diffData, definitions);
+        Set<Action> nonEssChanges = ChangeFinder.findChanges(diffData, definitions);
         printChanges(nonEssChanges);
     }
 
-    private static void printChanges(List<Action> changes) {
+    private static void printChanges(Set<Action> changes) {
         changes.forEach(System.out::println);
     }
 }

@@ -2,9 +2,7 @@ package bachelors.project.util;
 
 import com.github.gumtreediff.tree.Tree;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -49,27 +47,27 @@ public class JoernCient {
     }
 
     // Returns query string that can be used to obtain the equivalent node in Joern todo: deal with possible multiple outputs, add support for multiple files
-    public static String findLocal(Tree node, String relativeFilePath, String name) {
-        String condition = getParentCondition(node);
+    public static String getLocalQuery(Tree node, String relativeFilePath, String name) {
+        String condition = buildConditionBasedOnParents(node);
         return "cpg.local.name(\"%s\").where(%s)".formatted(name, condition);
     }
 
-    public static String findIdentifier(Tree node, String relativeFilePath, String name) {
-        String condition = getParentCondition(node);
+    public static String getIdentifierQuery(Tree node, String relativeFilePath, String name) {
+        String condition = buildConditionBasedOnParents(node);
         return "cpg.identifier.name(\"%s\").where(%s)".formatted(name, condition);
     }
 
-    public static String findMethod(Tree node, String relativeFilePath, String name) {
-        String condition = getParentCondition(node);
+    public static String getMethodQuery(Tree node, String relativeFilePath, String name) {
+        String condition = buildConditionBasedOnParents(node);
         return "cpg.method.name(\"%s\").where(%s)".formatted(name, condition);
     }
 
-    public static String findCall(Tree node, String relativeFilePath, String name) {
-        String condition = getParentCondition(node);
+    public static String getCallQuery(Tree node, String relativeFilePath, String name) {
+        String condition = buildConditionBasedOnParents(node);
         return "cpg.call.name(\"%s\").where(%s)".formatted(name, condition);
     }
 
-    private static String getParentCondition(Tree node) {
+    private static String buildConditionBasedOnParents(Tree node) {
         List<String> steps = new ArrayList<>();
         List<Tree> parents = node.getParents();
         for (int i = 0; i < parents.size(); i++) {

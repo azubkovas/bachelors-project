@@ -1,9 +1,9 @@
-package bachelors.project.repr.changetype;
+package bachelors.project.repr.changepattern;
 
-public class Update extends ChangeType {
+public class UpdatePattern extends ChangePattern {
     private String old, new_;
 
-    public Update(Target target, String old, String new_) {
+    public UpdatePattern(Target target, String old, String new_) {
         super(target);
         this.old = old;
         this.new_ = new_;

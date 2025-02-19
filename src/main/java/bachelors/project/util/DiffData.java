@@ -3,8 +3,9 @@ package bachelors.project.util;
 import com.github.gumtreediff.actions.model.Action;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DiffData {
     private final Map<String, SingleFileDiffData> fileDiffs;
@@ -27,11 +28,11 @@ public class DiffData {
         fileDiffs.put(singleFileDiffData.getFilePathPair().first, singleFileDiffData);
     }
 
-    public List<Action> getAllActions() {
+    public Set<Action> getAllActions() {
         return fileDiffs.values().stream()
                 .map(SingleFileDiffData::getEditScript)
                 .flatMap(editScript -> editScript.asList().stream())
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     public String getPrePatchRevisionPath() {

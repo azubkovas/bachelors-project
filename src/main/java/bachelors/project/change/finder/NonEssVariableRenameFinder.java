@@ -8,12 +8,12 @@ public class NonEssVariableRenameFinder extends ChangeFinder {
 ////        List<Action> renameCasualtyChanges = new ArrayList<>();
 ////        EditScript actions = diffData.getEditScript();
 ////        for (Action action : actions) {
-////            if (action instanceof Update update && update.getNode().getType().name.equals("name") && update.getNode().getParent().getType().name.equals("decl")) {
+////            if (action instanceof UpdatePattern update && update.getNode().getType().name.equals("name") && update.getNode().getParent().getType().name.equals("decl")) {
 ////                String prevName = update.getNode().getLabel();
 ////                String newName = update.getValue();
 ////                String declNode = JoernCient.findLocal(update.getNode().getParent(), diffData.getBeforeFilePath(), prevName);
 ////                for (Action act : actions) {
-////                    if (act instanceof Update upd && upd != update && upd.getNode().getLabel().equals(prevName) &&
+////                    if (act instanceof UpdatePattern upd && upd != update && upd.getNode().getLabel().equals(prevName) &&
 ////                            upd.getValue().equals(newName)) {
 ////                        String usageNode = JoernCient.findIdentifier(upd.getNode(), diffData.getBeforeFilePath(), prevName);
 ////                        String queryOutput = JoernCient.executeQuery(("%s.refsTo.toSet == %s.toSet").formatted(

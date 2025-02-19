@@ -21,8 +21,8 @@ class NonEssMethodRenameFinderTest {
 //        List<Action> res = finder.findChanges(diffData);
 //
 //        assertEquals(2, res.size());
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("getX") && upd.getNode().getPos() == 157 && upd.getValue().equals("readX")));
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("getY") && upd.getNode().getPos() == 166 && upd.getValue().equals("readY")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("getX") && upd.getNode().getPos() == 157 && upd.getValue().equals("readX")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("getY") && upd.getNode().getPos() == 166 && upd.getValue().equals("readY")));
     }
 
     @Test
@@ -33,8 +33,8 @@ class NonEssMethodRenameFinderTest {
 //        List<Action> res = finder.findChanges(diffData);
 //
 //        assertEquals(2, res.size());
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("getX") && upd.getNode().getPos() == 223 && upd.getValue().equals("readX")));
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("getY") && upd.getNode().getPos() == 232 && upd.getValue().equals("readY")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("getX") && upd.getNode().getPos() == 223 && upd.getValue().equals("readX")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("getY") && upd.getNode().getPos() == 232 && upd.getValue().equals("readY")));
     }
 
     @Test
@@ -45,6 +45,6 @@ class NonEssMethodRenameFinderTest {
 //        List<Action> res = finder.findChanges(diffData);
 //
 //        assertEquals(1, res.size());
-//        assertTrue(res.stream().anyMatch(action -> action instanceof Update upd && upd.getNode().getLabel().equals("greet") && upd.getNode().getPos() == 86 && upd.getValue().equals("sayHello")));
+//        assertTrue(res.stream().anyMatch(action -> action instanceof UpdatePattern upd && upd.getNode().getLabel().equals("greet") && upd.getNode().getPos() == 86 && upd.getValue().equals("sayHello")));
     }
 }

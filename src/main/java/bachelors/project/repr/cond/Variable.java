@@ -1,10 +1,11 @@
 package bachelors.project.repr.cond;
 
 import bachelors.project.repr.NotWellFormedException;
+import bachelors.project.util.DiffData;
 
 import java.util.Map;
 
-public class Variable extends Condition {
+public class Variable implements Evaluatable {
     private final String name;
 
     public Variable(String name) {
@@ -15,10 +16,9 @@ public class Variable extends Condition {
         return name;
     }
 
-    @Override
-    public <T> T evaluate(Map<String, String> variables) {
+    public Object evaluate(Map<String, Object> variables, DiffData diffData) throws NotWellFormedException {
         if (variables.containsKey(name)) {
-            return (T) variables.get(name);
+            return variables.get(name);
         }
         throw new NotWellFormedException("Variable " + name + " not found in the given map");
     }

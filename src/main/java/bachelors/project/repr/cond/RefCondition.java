@@ -26,8 +26,13 @@ public class RefCondition extends Condition {
         assert (refererNode != null && refereeNode != null);
         String refererQuery = JoernManager.getNodeQueryOfRequiredType(refererNode, refererPattern.getNodeType());
         String refereeQuery = JoernManager.getNodeQueryOfRequiredType(refereeNode, refereePattern.getNodeType());
+        String funcName = switch (refererPattern.getNodeType()) {
+            case IDENTIFIER -> "refsTo";
+            case CALL -> "callee";
+            default -> throw new RuntimeException("Unsupported node type");
+        };
         try {
-            return JoernManager.getInstance().executeQuery(refererQuery + ".refsTo.toSet == " + refereeQuery + ".toSet").equals("true");
+            return JoernManager.getInstance().executeQuery(refererQuery + ".%s.toSet == ".formatted(funcName) + refereeQuery + ".toSet").equals("true");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -80,4 +80,187 @@ class ChangeFinderTest {
         Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
         assertEquals(2, changes.size());
     }
+
+    @Test
+    void testFindChangesWithCppVariableRenameExample() throws IOException {
+         //UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i.refersTo(l));
+         DiffData diffData = GumTreeClient.getDiffData(
+                 "src/test/data/rename_casualties/c++/BeforeVariableRename.cpp",
+                 "src/test/data/rename_casualties/c++/AfterVariableRename.cpp");
+         Definition definition = new Definition(
+                 new UpdatePattern(
+                         new Target(
+                                 new Identifier(),
+                                 "i"
+                         ),
+                         "x",
+                         "y"
+                 ),
+                 new ExistentialQuantification(
+                         new UpdatePattern(
+                                 new Target(
+                                         new Local(),
+                                         "l"
+                                 ),
+                                 "x",
+                                 "y"
+                         ),
+                         new RefCondition(new Variable("i"), new Variable("l"))
+                 ));
+         Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
+         assertEquals(2, changes.size());
+    }
+
+    @Test
+    void testFindChangesWithCVariableRenameExample() throws IOException {
+        // UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i.refersTo(l));
+        DiffData diffData = GumTreeClient.getDiffData(
+                "src/test/data/rename_casualties/c/BeforeVariableRename.c",
+                "src/test/data/rename_casualties/c/AfterVariableRename.c");
+        Definition definition = new Definition(
+                new UpdatePattern(
+                        new Target(
+                                new Identifier(),
+                                "i"
+                        ),
+                        "x",
+                        "y"
+                ),
+                new ExistentialQuantification(
+                        new UpdatePattern(
+                                new Target(
+                                        new Local(),
+                                        "l"
+                                ),
+                                "x",
+                                "y"
+                        ),
+                        new RefCondition(new Variable("i"), new Variable("l"))
+                ));
+        Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        assertEquals(4, changes.size());
+    }
+
+    @Test
+    void testFindChangesWithCsVariableRenameExample() throws IOException {
+        // UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i.refersTo(l));
+        DiffData diffData = GumTreeClient.getDiffData(
+                "src/test/data/rename_casualties/c#/BeforeVariableRename.cs",
+                "src/test/data/rename_casualties/c#/AfterVariableRename.cs");
+        Definition definition = new Definition(
+                new UpdatePattern(
+                        new Target(
+                                new Identifier(),
+                                "i"
+                        ),
+                        "x",
+                        "y"
+                ),
+                new ExistentialQuantification(
+                        new UpdatePattern(
+                                new Target(
+                                        new Local(),
+                                        "l"
+                                ),
+                                "x",
+                                "y"
+                        ),
+                        new RefCondition(new Variable("i"), new Variable("l"))
+                ));
+        Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        assertEquals(2, changes.size());
+    }
+
+    @Test
+    void testFindChangesWithJavaMethodRenameExample() throws IOException {
+        // UPDATE CALL c x -> y | ∃(UPDATE METHOD m x -> y | c.refersTo(m));
+         DiffData diffData = GumTreeClient.getDiffData(
+                 "src/test/data/rename_casualties/java/BeforeMethodRename.java",
+                 "src/test/data/rename_casualties/java/AfterMethodRename.java"
+         );
+            Definition definition = new Definition(
+                    new UpdatePattern(
+                            new Target(
+                                    new bachelors.project.repr.nodepattern.Call(),
+                                    "c"
+                            ),
+                            "x",
+                            "y"
+                    ),
+                    new ExistentialQuantification(
+                            new UpdatePattern(
+                                    new Target(
+                                            new bachelors.project.repr.nodepattern.Method(),
+                                            "m"
+                                    ),
+                                    "x",
+                                    "y"
+                            ),
+                            new RefCondition(new Variable("c"), new Variable("m"))
+                    ));
+            Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
+            assertEquals(2, changes.size());
+    }
+
+    @Test
+    void testFindChangesWithCppMethodRenameExample() throws IOException {
+        // UPDATE CALL c x -> y | ∃(UPDATE METHOD m x -> y | c.refersTo(m));
+         DiffData diffData = GumTreeClient.getDiffData(
+                 "src/test/data/rename_casualties/c++/BeforeMethodRename.cpp",
+                 "src/test/data/rename_casualties/c++/AfterMethodRename.cpp"
+         );
+            Definition definition = new Definition(
+                    new UpdatePattern(
+                            new Target(
+                                    new bachelors.project.repr.nodepattern.Call(),
+                                    "c"
+                            ),
+                            "x",
+                            "y"
+                    ),
+                    new ExistentialQuantification(
+                            new UpdatePattern(
+                                    new Target(
+                                            new bachelors.project.repr.nodepattern.Method(),
+                                            "m"
+                                    ),
+                                    "x",
+                                    "y"
+                            ),
+                            new RefCondition(new Variable("c"), new Variable("m"))
+                    ));
+            Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
+            assertEquals(2, changes.size());
+    }
+
+    @Test
+    void testFindChangesWithCMethodRenameExample() throws IOException {
+        // UPDATE CALL c x -> y | ∃(UPDATE METHOD m x -> y | c.refersTo(m));
+        DiffData diffData = GumTreeClient.getDiffData(
+                "src/test/data/rename_casualties/c/BeforeFunctionRename.c",
+                "src/test/data/rename_casualties/c/AfterFunctionRename.c"
+        );
+        Definition definition = new Definition(
+                new UpdatePattern(
+                        new Target(
+                                new bachelors.project.repr.nodepattern.Call(),
+                                "c"
+                        ),
+                        "x",
+                        "y"
+                ),
+                new ExistentialQuantification(
+                        new UpdatePattern(
+                                new Target(
+                                        new bachelors.project.repr.nodepattern.Method(),
+                                        "m"
+                                ),
+                                "x",
+                                "y"
+                        ),
+                        new RefCondition(new Variable("c"), new Variable("m"))
+                ));
+        Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        assertEquals(1, changes.size());
+    }
 }

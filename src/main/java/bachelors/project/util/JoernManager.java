@@ -79,8 +79,40 @@ public class JoernManager {
             case LOCAL -> checkNodeLocal(node);
             case IDENTIFIER -> checkNodeIdentifier(node);
             case LITERAL -> checkNodeLiteral(node);
+            case CALL -> checkNodeCall(node);
+            case METHOD -> checkNodeMethod(node);
             default -> throw new RuntimeException("Unsupported node type: %s".formatted(requiredType));
         };
+    }
+
+    private static boolean checkNodeMethod(Tree node) {
+        try {
+            Tree nameNode = GumTreeClient.getFirstChildOfType(node, "name");
+            String name = nameNode.getChildren().isEmpty() ? nameNode.getLabel() : GumTreeClient.getLastChildOfType(nameNode, "name").getLabel();
+            String methodQuery = getMethodQuery(node, "", name);
+            String result = getInstance().executeQuery("""
+                    %s.hasNext""".formatted(methodQuery));
+            return result.equals("true");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    private static boolean checkNodeCall(Tree node) {
+        try {
+            Tree nameNode = GumTreeClient.getFirstChildOfType(node, "name");
+            String name = nameNode.getChildren().isEmpty() ? nameNode.getLabel() : GumTreeClient.getLastChildOfType(nameNode, "name").getLabel();
+            String callQuery = getCallQuery(node, "", name);
+            String result = getInstance().executeQuery("""
+                    %s.hasNext""".formatted(callQuery));
+            return result.equals("true");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 
     private static boolean checkNodeLiteral(Tree node) {
@@ -105,6 +137,16 @@ public class JoernManager {
             case LOCAL -> getLocalQuery(node, "", node.getLabel());
             case IDENTIFIER -> getIdentifierQuery(node, "", node.getLabel());
             case LITERAL -> getLiteralQuery(node, "", node.getLabel());
+            case CALL -> {
+                Tree nameNode = GumTreeClient.getFirstChildOfType(node, "name");
+                String name = nameNode.getChildren().isEmpty() ? nameNode.getLabel() : GumTreeClient.getLastChildOfType(nameNode, "name").getLabel();
+                yield getCallQuery(node, "", name);
+            }
+            case METHOD -> {
+                Tree nameNode = GumTreeClient.getFirstChildOfType(node, "name");
+                String name = nameNode.getChildren().isEmpty() ? nameNode.getLabel() : GumTreeClient.getLastChildOfType(nameNode, "name").getLabel();
+                yield getMethodQuery(node, "", name);
+            }
             default -> throw new RuntimeException("Unsupported node type: %s".formatted(requiredType));
         };
     }

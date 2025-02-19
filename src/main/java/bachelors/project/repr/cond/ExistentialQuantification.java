@@ -1,5 +1,6 @@
 package bachelors.project.repr.cond;
 
+import bachelors.project.ChangeFinder;
 import bachelors.project.repr.changepattern.ChangePattern;
 import bachelors.project.repr.changepattern.UpdatePattern;
 import bachelors.project.util.DiffData;
@@ -21,26 +22,9 @@ public class ExistentialQuantification extends Condition {
     @Override
     public Object evaluate(Map<String, Object> variables, DiffData diffData) {
         for (Action action : diffData.getAllActions()) {
-            if (pattern instanceof UpdatePattern updatePattern
-                    && action instanceof com.github.gumtreediff.actions.model.Update updateAction
-                    && JoernManager.checkNodeOfRequiredType(updateAction.getNode(), updatePattern.getTarget().getNodePattern().getNodeType())) {
+            if (ChangeFinder.actionMatchesChangePattern(action, pattern, variables)) {
                 Map<String, Object> innerVariables = new HashMap<>(variables);
-                if (!variables.containsKey(updatePattern.getOld())) {
-                    innerVariables.put(updatePattern.getOld(), updateAction.getNode().getLabel());
-                } else {
-                    if (!innerVariables.get(updatePattern.getOld()).equals(updateAction.getNode().getLabel())) {
-                        continue;
-                    }
-                }
-                if (!variables.containsKey(updatePattern.getNew_())) {
-                    innerVariables.put(updatePattern.getNew_(), updateAction.getValue());
-                } else {
-                    if (!innerVariables.get(updatePattern.getNew_()).equals(updateAction.getValue())) {
-                        continue;
-                    }
-                }
-                updatePattern.getTarget().getNodePattern().setCorrespondingNode(updateAction.getNode());
-                innerVariables.put(updatePattern.getTarget().getLabel(), updatePattern.getTarget().getNodePattern());
+                ChangeFinder.populateVariables(innerVariables, pattern, action);
                 if ((Boolean) condition.evaluate(innerVariables, diffData)) return true;
             }
         }

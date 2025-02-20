@@ -1,6 +1,7 @@
 package bachelors.project.repr.cond;
 
 import bachelors.project.repr.NotWellFormedException;
+import bachelors.project.repr.nodepattern.VariableContainer;
 import bachelors.project.util.DiffData;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ public class Binary extends Condition {
     }
 
     @Override
-    public  Object evaluate(Map<String, Object> variables, DiffData diffData) throws NotWellFormedException {
+    public  Object evaluate(VariableContainer variables, DiffData diffData) throws NotWellFormedException {
         Object leftValue, rightValue;
         leftValue = left;
         rightValue = right;

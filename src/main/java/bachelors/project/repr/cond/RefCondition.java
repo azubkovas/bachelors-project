@@ -1,6 +1,8 @@
 package bachelors.project.repr.cond;
 
 import bachelors.project.repr.nodepattern.NodePattern;
+import bachelors.project.repr.nodepattern.VariableContainer;
+import bachelors.project.repr.nodepattern.VariablePattern;
 import bachelors.project.util.DiffData;
 import bachelors.project.util.JoernManager;
 import com.github.gumtreediff.tree.Tree;
@@ -18,9 +20,9 @@ public class RefCondition extends Condition {
     }
 
     @Override
-    public Object evaluate(Map<String, Object> variables, DiffData diffData) {
-        NodePattern refererPattern = (NodePattern) referer.evaluate(variables, diffData);
-        NodePattern refereePattern = (NodePattern) referee.evaluate(variables, diffData);
+    public Object evaluate(VariableContainer  variables, DiffData diffData) {
+        VariablePattern refererPattern = (VariablePattern) referer.evaluate(variables, diffData);
+        VariablePattern refereePattern = (VariablePattern) referee.evaluate(variables, diffData);
         Tree refererNode = refererPattern.getCorrespondingNode();
         Tree refereeNode = refereePattern.getCorrespondingNode();
         assert (refererNode != null && refereeNode != null);

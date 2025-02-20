@@ -1,8 +1,10 @@
 package bachelors.project.repr.cond;
 
 import bachelors.project.ChangeFinder;
+import bachelors.project.repr.Definition;
 import bachelors.project.repr.changepattern.ChangePattern;
 import bachelors.project.repr.changepattern.UpdatePattern;
+import bachelors.project.repr.nodepattern.VariableContainer;
 import bachelors.project.util.DiffData;
 import bachelors.project.util.JoernManager;
 import com.github.gumtreediff.actions.model.Action;
@@ -11,22 +13,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExistentialQuantification extends Condition {
-    private final ChangePattern pattern;
-    private final Condition condition;
+    private final Definition definition;
 
-    public ExistentialQuantification(ChangePattern pattern, Condition condition) {
-        this.pattern = pattern;
-        this.condition = condition;
+    public ExistentialQuantification(Definition definition) {
+        this.definition = definition;
     }
 
     @Override
-    public Object evaluate(Map<String, Object> variables, DiffData diffData) {
+    public Object evaluate(VariableContainer variables, DiffData diffData) {
         for (Action action : diffData.getAllActions()) {
-            if (ChangeFinder.actionMatchesChangePattern(action, pattern, variables)) {
-                Map<String, Object> innerVariables = new HashMap<>(variables);
-                ChangeFinder.populateVariables(innerVariables, pattern, action);
-                if ((Boolean) condition.evaluate(innerVariables, diffData)) return true;
-            }
+            VariableContainer innerVariables = new VariableContainer(variables);
+            if (definition.matchesAction(action, diffData, innerVariables)) return true;
         }
         return false;
     }

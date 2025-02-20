@@ -1,9 +1,25 @@
 package bachelors.project.repr.nodepattern;
 
+import com.github.gumtreediff.tree.Tree;
+
 public class Literal extends NodePattern {
+    private final String value;
+
+    public Literal(String value) {
+        this.value = value;
+    }
 
     @Override
     public NodeType getNodeType() {
         return NodeType.LITERAL;
+    }
+
+    @Override
+    public boolean matchesNode(Tree node, VariableContainer variables) {
+        return getNodeType().matches(node.getType().name) && (value == null || value.equals(node.getLabel()));
+    }
+
+    public String getValue() {
+        return value;
     }
 }

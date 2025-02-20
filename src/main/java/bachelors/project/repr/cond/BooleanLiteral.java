@@ -1,5 +1,6 @@
 package bachelors.project.repr.cond;
 
+import bachelors.project.repr.nodepattern.VariableContainer;
 import bachelors.project.util.DiffData;
 
 import java.util.Map;
@@ -12,7 +13,7 @@ public class BooleanLiteral<T> extends Condition {
     }
 
     @Override
-    public Object evaluate(Map<String, Object> variables, DiffData diffData) {
+    public Object evaluate(VariableContainer variables, DiffData diffData) {
         return value;
     }
 }

@@ -39,7 +39,9 @@ public class GumTreeClient {
     private static SingleFileDiffData getSingleFileDiffData(String beforeFilePath, String afterFilePath) {
         try {
             Tree before = getTree(beforeFilePath);
+            preProcessTree(before);
             Tree after = getTree(afterFilePath);
+            preProcessTree(after);
             Matcher defaultMatcher = Matchers.getInstance().getMatcher();
             MappingStore mappings = defaultMatcher.match(before, after);
             EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
@@ -47,6 +49,29 @@ public class GumTreeClient {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private static void preProcessTree(Tree tree) {
+        // depth first traversal
+        List<Tree> nodesToModify = new ArrayList<>();
+        for (Tree node : tree.breadthFirst()) {
+            if (node.getType().name.equals("function") || node.getType().name.equals("decl")) {
+                nodesToModify.add(node);
+            }
+        }
+        for (Tree node : nodesToModify) {
+            mergeName(node);
+        }
+    }
+
+    private static void mergeName(Tree node) {
+        Tree nameNode = getFirstChildOfType(node, "name");
+        if (nameNode != null) {
+            node.setLabel(nameNode.getLabel());
+        }
+        List<Tree> children = node.getChildren();
+        children.remove(nameNode);
+        node.setChildren(children);
     }
 
     private static List<Pair<String, String>> getCorrespondingFilePairs(String prePatchRevisionPath, String postPatchRevisionPath) {
@@ -77,7 +102,7 @@ public class GumTreeClient {
     }
 
     public static Tree getLastChildOfType(Tree parent, String type) {
-        List<Tree> listOfRelevantNodes =  parent.getChildren().stream().filter(child -> child.getType().name.equals(type)).toList();
+        List<Tree> listOfRelevantNodes = parent.getChildren().stream().filter(child -> child.getType().name.equals(type)).toList();
         return listOfRelevantNodes.isEmpty() ? null : listOfRelevantNodes.get(listOfRelevantNodes.size() - 1);
     }
 

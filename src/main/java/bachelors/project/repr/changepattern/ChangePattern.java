@@ -1,13 +1,8 @@
 package bachelors.project.repr.changepattern;
 
+import bachelors.project.repr.nodepattern.VariableContainer;
+import com.github.gumtreediff.actions.model.Action;
+
 public abstract class ChangePattern {
-    private final Target target;
-
-    public ChangePattern(Target target) {
-        this.target = target;
-    }
-
-    public Target getTarget() {
-        return target;
-    }
+    public abstract boolean matchesAction(Action action, VariableContainer variables);
 }

@@ -2,6 +2,9 @@ package bachelors.project.repr;
 
 import bachelors.project.repr.changepattern.ChangePattern;
 import bachelors.project.repr.cond.Condition;
+import bachelors.project.repr.nodepattern.VariableContainer;
+import bachelors.project.util.DiffData;
+import com.github.gumtreediff.actions.model.Action;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -29,6 +32,10 @@ public class Definition {
             e.printStackTrace();
         }
         return definitions;
+    }
+
+    public boolean matchesAction(Action action, DiffData diffData, VariableContainer variables) {
+        return pattern.matchesAction(action, variables) && (Boolean) condition.evaluate(variables, diffData);
     }
 
     public static Definition getDefinition(String defString) {

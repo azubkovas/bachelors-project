@@ -199,7 +199,7 @@ public class JoernManager {
                     steps.add(".astParent.isBlock");
                     break;
                 case "function":
-                    name = GumTreeClient.getFirstChildOfType(parent, "name").getLabel();
+                    name = parent.getLabel();
                     steps.add(".astParent.isMethod.name(\"%s\")".formatted(name));
                     break;
                 case "class":

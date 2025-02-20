@@ -1,6 +1,5 @@
-package bachelors.project.change.finder;
+package bachelors.project;
 
-import bachelors.project.ChangeFinder;
 import bachelors.project.repr.Definition;
 import bachelors.project.repr.changepattern.UpdatePattern;
 import bachelors.project.repr.cond.*;

@@ -55,7 +55,7 @@ public class GumTreeClient {
         // depth first traversal
         List<Tree> nodesToModify = new ArrayList<>();
         for (Tree node : tree.breadthFirst()) {
-            if (node.getType().name.equals("function") || node.getType().name.equals("decl")) {
+            if (node.getType().name.equals("function") || node.getType().name.equals("decl") || node.getType().name.equals("call")) {
                 nodesToModify.add(node);
             }
         }

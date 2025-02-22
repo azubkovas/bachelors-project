@@ -87,8 +87,7 @@ public class JoernManager {
 
     private static boolean checkNodeMethod(Tree node) {
         try {
-            Tree nameNode = GumTreeClient.getFirstChildOfType(node, "name");
-            String name = nameNode.getChildren().isEmpty() ? nameNode.getLabel() : GumTreeClient.getLastChildOfType(nameNode, "name").getLabel();
+            String name = node.getLabel();
             String methodQuery = getMethodQuery(node, "", name);
             String result = getInstance().executeQuery("""
                     %s.hasNext""".formatted(methodQuery));
@@ -102,8 +101,7 @@ public class JoernManager {
 
     private static boolean checkNodeCall(Tree node) {
         try {
-            Tree nameNode = GumTreeClient.getFirstChildOfType(node, "name");
-            String name = nameNode.getChildren().isEmpty() ? nameNode.getLabel() : GumTreeClient.getLastChildOfType(nameNode, "name").getLabel();
+            String name = node.getLabel();
             String callQuery = getCallQuery(node, "", name);
             String result = getInstance().executeQuery("""
                     %s.hasNext""".formatted(callQuery));
@@ -137,16 +135,8 @@ public class JoernManager {
             case LOCAL -> getLocalQuery(node, "", node.getLabel());
             case IDENTIFIER -> getIdentifierQuery(node, "", node.getLabel());
             case LITERAL -> getLiteralQuery(node, "", node.getLabel());
-            case CALL -> {
-                Tree nameNode = GumTreeClient.getFirstChildOfType(node, "name");
-                String name = nameNode.getChildren().isEmpty() ? nameNode.getLabel() : GumTreeClient.getLastChildOfType(nameNode, "name").getLabel();
-                yield getCallQuery(node, "", name);
-            }
-            case METHOD -> {
-                Tree nameNode = GumTreeClient.getFirstChildOfType(node, "name");
-                String name = nameNode.getChildren().isEmpty() ? nameNode.getLabel() : GumTreeClient.getLastChildOfType(nameNode, "name").getLabel();
-                yield getMethodQuery(node, "", name);
-            }
+            case CALL -> getCallQuery(node, "", node.getLabel());
+            case METHOD -> getMethodQuery(node, "", node.getLabel());
             default -> throw new RuntimeException("Unsupported node type: %s".formatted(requiredType));
         };
     }
@@ -209,8 +199,7 @@ public class JoernManager {
                     steps.add(".astParent.isTypeDecl.name(\"%s\")".formatted(name));
                     break;
                 case "call":
-                    Tree nameNode = GumTreeClient.getFirstChildOfType(parent, "name");
-                    name = nameNode.getChildren().isEmpty() ? nameNode.getLabel() : GumTreeClient.getLastChildOfType(nameNode, "name").getLabel();
+                    name = parent.getLabel();
                     steps.add(".astParent.isCall.name(\"%s\")".formatted(name));
                     break;
                 case "if":

@@ -1,16 +1,9 @@
 package bachelors.project.repr.cond;
 
-import bachelors.project.ChangeFinder;
 import bachelors.project.repr.Definition;
-import bachelors.project.repr.changepattern.ChangePattern;
-import bachelors.project.repr.changepattern.UpdatePattern;
-import bachelors.project.repr.nodepattern.VariableContainer;
+import bachelors.project.repr.VariableContainer;
 import bachelors.project.util.DiffData;
-import bachelors.project.util.JoernManager;
 import com.github.gumtreediff.actions.model.Action;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ExistentialQuantification extends Condition {
     private final Definition definition;

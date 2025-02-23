@@ -1,17 +1,18 @@
 package bachelors.project.repr.cond;
 
 import bachelors.project.repr.NotWellFormedException;
-import bachelors.project.repr.nodepattern.VariableContainer;
+import bachelors.project.repr.cond.eval.Evaluatable;
+import bachelors.project.repr.VariableContainer;
+import bachelors.project.repr.cond.eval.Variable;
+import bachelors.project.repr.nodepattern.LiteralPattern;
 import bachelors.project.util.DiffData;
 
-import java.util.Map;
-
-public class Binary extends Condition {
+public class BinaryCondition extends Condition {
     private final Object left;
     private final Object right;
     private final Operator operator;
 
-    public Binary(Object left, Object right, Operator operator) {
+    public BinaryCondition(Object left, Object right, Operator operator) {
         this.left = left;
         this.right = right;
         this.operator = operator;
@@ -23,7 +24,9 @@ public class Binary extends Condition {
         leftValue = left;
         rightValue = right;
         if (left instanceof Evaluatable leftEval) leftValue = leftEval.evaluate(variables, diffData);
+        if (left instanceof Variable leftVar && leftVar.evaluate(variables, diffData).getCorrespondingPattern() instanceof LiteralPattern lit) leftValue = lit.getValue();
         if (right instanceof Evaluatable rightEval) rightValue = rightEval.evaluate(variables, diffData);
+        if (right instanceof Variable rightVar && rightVar.evaluate(variables, diffData).getCorrespondingPattern() instanceof LiteralPattern lit) rightValue = lit.getValue();
         return switch (operator) {
             case AND -> (Boolean) leftValue && (Boolean) rightValue;
             case OR -> (Boolean) leftValue || (Boolean) rightValue;

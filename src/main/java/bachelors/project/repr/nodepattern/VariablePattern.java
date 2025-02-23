@@ -1,24 +1,22 @@
 package bachelors.project.repr.nodepattern;
 
+import bachelors.project.repr.NotWellFormedException;
+import bachelors.project.repr.VariableContainer;
+import bachelors.project.repr.VariableValue;
 import com.github.gumtreediff.tree.Tree;
 
 public class VariablePattern extends NodePattern {
     private final String name;
-    private Tree correspondingNode;
-    private NodePattern correspondingNodePattern;
-
-    public VariablePattern(String name) {
-        this.name = name;
-    }
-
-    public VariablePattern(String name, Tree correspondingNode) {
-        this.name = name;
-        this.correspondingNode = correspondingNode;
-    }
+    private final NodePattern correspondingNodePattern;
 
     public VariablePattern(String name, NodePattern correspondingNodePattern) {
         this.name = name;
         this.correspondingNodePattern = correspondingNodePattern;
+    }
+
+    public VariablePattern(String name) {
+        this.name = name;
+        this.correspondingNodePattern = null;
     }
 
     @Override
@@ -30,28 +28,20 @@ public class VariablePattern extends NodePattern {
     public boolean matchesNode(Tree node, VariableContainer variables) {
         if (correspondingNodePattern != null) {
             if (!variables.contains(name)) {
-                variables.addVariable(this);
-                correspondingNode = node;
+                variables.addVariable(name, new VariableValue(correspondingNodePattern, node));
+            } else {
+                throw new NotWellFormedException("Variable %s must have already been defined!".formatted(name));
             }
             return correspondingNodePattern.matchesNode(node, variables);
-        }
-        if (variables.contains(name)) {
-//            correspondingNode = variables.get(name);
-//            return correspondingNode == node;
-            throw new RuntimeException("Not implemented yet!");
         } else {
-            variables.addVariable(new VariablePattern(name, node));
-            correspondingNode = node;
-            return true;
+            VariableValue value = variables.get(name);
+            assert value != null;
+            return value.getCorrespondingPattern().matchesNode(node, variables);
         }
     }
 
     public String getName() {
         return name;
-    }
-
-    public Tree getCorrespondingNode() {
-        return correspondingNode;
     }
 
     public NodePattern getCorrespondingNodePattern() {

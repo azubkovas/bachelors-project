@@ -1,6 +1,6 @@
 package bachelors.project.repr.changepattern;
 
-import bachelors.project.repr.nodepattern.VariableContainer;
+import bachelors.project.repr.VariableContainer;
 import com.github.gumtreediff.actions.model.Action;
 
 public abstract class ChangePattern {

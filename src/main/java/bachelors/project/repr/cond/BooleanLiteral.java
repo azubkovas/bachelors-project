@@ -1,9 +1,7 @@
 package bachelors.project.repr.cond;
 
-import bachelors.project.repr.nodepattern.VariableContainer;
+import bachelors.project.repr.VariableContainer;
 import bachelors.project.util.DiffData;
-
-import java.util.Map;
 
 public class BooleanLiteral<T> extends Condition {
     private final boolean value;

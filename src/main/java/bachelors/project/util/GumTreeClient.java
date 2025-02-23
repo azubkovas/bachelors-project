@@ -5,6 +5,7 @@ import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
 import com.github.gumtreediff.client.Run;
 import com.github.gumtreediff.gen.TreeGenerator;
 import com.github.gumtreediff.gen.TreeGenerators;
+import com.github.gumtreediff.gen.python.PythonTreeGenerator;
 import com.github.gumtreediff.gen.srcml.SrcmlCTreeGenerator;
 import com.github.gumtreediff.gen.srcml.SrcmlCppTreeGenerator;
 import com.github.gumtreediff.gen.srcml.SrcmlCsTreeGenerator;
@@ -53,25 +54,43 @@ public class GumTreeClient {
 
     private static void preProcessTree(Tree tree) {
         // depth first traversal
-        List<Tree> nodesToModify = new ArrayList<>();
+        List<Tree> nodesToMerge = new ArrayList<>();
+        List<Tree> nodesToRemove = new ArrayList<>();
         for (Tree node : tree.breadthFirst()) {
             if (node.getType().name.equals("function") || node.getType().name.equals("decl") || node.getType().name.equals("call")) {
-                nodesToModify.add(node);
+                nodesToMerge.add(node);
+            }
+            if (node.getType().name.equals("block_content") && node.getParent().getType().name.equals("block")) {
+                nodesToRemove.add(node);
             }
         }
-        for (Tree node : nodesToModify) {
+        for (Tree node : nodesToMerge) {
             mergeName(node);
+        }
+        for (Tree node : nodesToRemove) {
+            List<Tree> children = node.getChildren();
+            List<Tree> siblings = node.getParent().getChildren();
+            siblings.remove(node);
+            siblings.addAll(children);
+            node.getParent().setChildren(siblings);
         }
     }
 
     private static void mergeName(Tree node) {
         Tree nameNode = getFirstChildOfType(node, "name");
         if (nameNode != null) {
-            node.setLabel(nameNode.getLabel());
+            StringBuilder label = new StringBuilder(nameNode.getLabel());
+            if (!nameNode.getChildren().isEmpty()) {
+                label = new StringBuilder();
+                for (Tree child : nameNode.getChildren()) {
+                    label.append(child.getLabel());
+                }
+            }
+            node.setLabel(label.toString());
+            List<Tree> children = node.getChildren();
+            children.remove(nameNode);
+            node.setChildren(children);
         }
-        List<Tree> children = node.getChildren();
-        children.remove(nameNode);
-        node.setChildren(children);
     }
 
     private static List<Pair<String, String>> getCorrespondingFilePairs(String prePatchRevisionPath, String postPatchRevisionPath) {
@@ -116,6 +135,8 @@ public class GumTreeClient {
             generator = new SrcmlCTreeGenerator();
         } else if (filePath.endsWith(".cs")) {
             generator = new SrcmlCsTreeGenerator();
+        } else if (filePath.endsWith(".py")) {
+            generator = new PythonTreeGenerator();
         } else {
             Run.initGenerators();
             generator = TreeGenerators.getInstance().get(filePath);

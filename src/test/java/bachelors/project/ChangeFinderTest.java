@@ -1,8 +1,12 @@
 package bachelors.project;
 
 import bachelors.project.repr.Definition;
+import bachelors.project.repr.changepattern.DeletePattern;
+import bachelors.project.repr.changepattern.InsertPattern;
 import bachelors.project.repr.changepattern.UpdatePattern;
 import bachelors.project.repr.cond.*;
+import bachelors.project.repr.cond.eval.ParentEval;
+import bachelors.project.repr.cond.eval.Variable;
 import bachelors.project.repr.nodepattern.*;
 import bachelors.project.util.DiffData;
 import bachelors.project.util.GumTreeClient;
@@ -23,17 +27,17 @@ class ChangeFinderTest {
         DiffData diffData = GumTreeClient.getDiffData("src/test/data/pre_patch/SampleProject", "src/test/data/post_patch/SampleProject");
         Definition definition = new Definition(
                 new UpdatePattern(
-                        new Literal(null),
+                        new LiteralPattern(null),
                         "x",
                         "y"
                 ),
-                new Binary(
-                        new Binary(
+                new BinaryCondition(
+                        new BinaryCondition(
                                 new Variable("x"),
                                 "\"Hello, World!\"",
                                 Operator.EQ
                         ),
-                        new Binary(
+                        new BinaryCondition(
                                 new Variable("y"),
                                 "\"Hello, Friends!\"",
                                 Operator.EQ
@@ -215,34 +219,32 @@ class ChangeFinderTest {
         assertEquals(1, changes.size());
     }
 
-//    @Test
-//    void testFindChangesWithJavaTrivialKeywordAddition() throws IOException {
-//        // REPLACE IDENTIFIER (FIELD x) BY FIELDACCESS (FIELD x)
-//        DiffData diffData = GumTreeClient.getDiffData(
-//                "src/test/data/trivial_keywords/WithoutThisKeyword.java",
-//                "src/test/data/trivial_keywords/WithThisKeyword.java"
-//        );
-//        Definition definition = new Definition(
-//                new UpdatePattern(
-//                        new Target(
-//                                new Identifier(),
-//                                "x"
-//                        ),
-//                        "x",
-//                        "y"
-//                ),
-//                new ExistentialQuantification(
-//                        new UpdatePattern(
-//                                new Target(
-//                                        new Local(),
-//                                        "l"
-//                                ),
-//                                "x",
-//                                "y"
-//                        ),
-//                        new RefCondition(new Variable("i"), new Variable("l"))
-//                ));
-////        Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
-////        assertEquals(1, changes.size());
-//    }
+    @Test
+    void testWithArithmeticTest2() throws IOException {
+        // INSERT RETURN INTO BLOCK
+        DiffData diffData = GumTreeClient.getDiffData(
+                "src/test/data/arithmetic/pre/Test2.java",
+                "src/test/data/arithmetic/post/Test2.java"
+        );
+        Definition definition = new Definition(new InsertPattern(new ReturnPattern(), new BlockPattern()), null);
+        Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        assertEquals(1, changes.size());
+    }
+
+    @Test
+    void testWithArithmeticTest2Inverse() throws IOException {
+        // DELETE RETURN r | PARENT(r) IS BLOCK
+        DiffData diffData = GumTreeClient.getDiffData(
+                "src/test/data/arithmetic/post/Test2.java",
+                "src/test/data/arithmetic/pre/Test2.java"
+        );
+        Definition definition = new Definition(
+                new DeletePattern(
+                        new VariablePattern("r", new ReturnPattern())
+                ),
+                new NodeTypeCondition(new ParentEval(new Variable("r")), new BlockPattern())
+        );
+        Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        assertEquals(1, changes.size());
+    }
 }

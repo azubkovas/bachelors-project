@@ -1,14 +1,13 @@
 package bachelors.project.repr.cond;
 
-import bachelors.project.repr.nodepattern.NodePattern;
-import bachelors.project.repr.nodepattern.VariableContainer;
-import bachelors.project.repr.nodepattern.VariablePattern;
+import bachelors.project.repr.VariableValue;
+import bachelors.project.repr.cond.eval.Variable;
+import bachelors.project.repr.VariableContainer;
 import bachelors.project.util.DiffData;
-import bachelors.project.util.JoernManager;
+import bachelors.project.util.JoernClient;
 import com.github.gumtreediff.tree.Tree;
 
 import java.io.IOException;
-import java.util.Map;
 
 public class RefCondition extends Condition {
     Variable referer;
@@ -21,20 +20,18 @@ public class RefCondition extends Condition {
 
     @Override
     public Object evaluate(VariableContainer  variables, DiffData diffData) {
-        VariablePattern refererPattern = (VariablePattern) referer.evaluate(variables, diffData);
-        VariablePattern refereePattern = (VariablePattern) referee.evaluate(variables, diffData);
-        Tree refererNode = refererPattern.getCorrespondingNode();
-        Tree refereeNode = refereePattern.getCorrespondingNode();
-        assert (refererNode != null && refereeNode != null);
-        String refererQuery = JoernManager.getNodeQueryOfRequiredType(refererNode, refererPattern.getNodeType());
-        String refereeQuery = JoernManager.getNodeQueryOfRequiredType(refereeNode, refereePattern.getNodeType());
-        String funcName = switch (refererPattern.getNodeType()) {
+        VariableValue refererVal = (VariableValue) referer.evaluate(variables, diffData);
+        VariableValue refereeVal = (VariableValue) referee.evaluate(variables, diffData);
+        assert (refererVal != null && refereeVal != null);
+        String refererQuery = JoernClient.getNodeQueryOfRequiredType(refererVal.getCorrespondingNode(), refererVal.getCorrespondingPattern().getNodeType());
+        String refereeQuery = JoernClient.getNodeQueryOfRequiredType(refereeVal.getCorrespondingNode(), refereeVal.getCorrespondingPattern().getNodeType());
+        String funcName = switch (refererVal.getCorrespondingPattern().getNodeType()) {
             case IDENTIFIER -> "refsTo";
             case CALL -> "callee";
             default -> throw new RuntimeException("Unsupported node type");
         };
         try {
-            return JoernManager.getInstance().executeQuery(refererQuery + ".%s.toSet == ".formatted(funcName) + refereeQuery + ".toSet").equals("true");
+            return JoernClient.getInstance().executeQuery(refererQuery + ".%s.toSet == ".formatted(funcName) + refereeQuery + ".toSet").equals("true");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class JoernManager {
-    private static JoernManager instance;
+public class JoernClient {
+    private static JoernClient instance;
     private Process joernProcess;
     private BufferedWriter joernWriter;
     private BufferedReader joernReader;
 
-    private JoernManager() throws IOException {
+    private JoernClient() throws IOException {
         ProcessBuilder builder = new ProcessBuilder("joern");
         joernProcess = builder.start();
         joernWriter = new BufferedWriter(new OutputStreamWriter(joernProcess.getOutputStream()));
@@ -39,9 +39,9 @@ public class JoernManager {
         );
     }
 
-    public static synchronized JoernManager getInstance() throws IOException {
+    public static synchronized JoernClient getInstance() throws IOException {
         if (instance == null) {
-            instance = new JoernManager();
+            instance = new JoernClient();
         }
         return instance;
     }

@@ -1,11 +1,12 @@
 package bachelors.project.repr.nodepattern;
 
+import bachelors.project.repr.VariableContainer;
 import com.github.gumtreediff.tree.Tree;
 
-public class Literal extends NodePattern {
+public class LiteralPattern extends NodePattern {
     private final String value;
 
-    public Literal(String value) {
+    public LiteralPattern(String value) {
         this.value = value;
     }
 

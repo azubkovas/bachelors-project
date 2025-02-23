@@ -1,12 +1,12 @@
 package bachelors.project.repr.changepattern;
 
-import bachelors.project.repr.nodepattern.Literal;
+import bachelors.project.repr.VariableValue;
+import bachelors.project.repr.nodepattern.LiteralPattern;
 import bachelors.project.repr.nodepattern.NodePattern;
 import bachelors.project.repr.nodepattern.VariablePattern;
-import bachelors.project.repr.nodepattern.VariableContainer;
+import bachelors.project.repr.VariableContainer;
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.actions.model.Update;
-import com.github.gumtreediff.tree.Tree;
 
 public class UpdatePattern extends ChangePattern {
     private final NodePattern target;
@@ -22,14 +22,14 @@ public class UpdatePattern extends ChangePattern {
     public boolean matchesAction(Action action, VariableContainer variables) {
         if (action instanceof Update upd && target.matchesNode(action.getNode(), variables)) {
             if (!variables.contains(old)) {
-                variables.addVariable(new VariablePattern(old, new Literal(upd.getNode().getLabel())));
+                variables.addVariable(old, new VariableValue(new LiteralPattern(upd.getNode().getLabel())));
             }
             if (!variables.contains(new_)) {
-                variables.addVariable(new VariablePattern(new_, new Literal(upd.getValue())));
+                variables.addVariable(new_, new VariableValue(new LiteralPattern(upd.getValue())));
             }
-            return variables.get(old).getCorrespondingNodePattern() instanceof Literal lit &&
+            return variables.get(old).getCorrespondingPattern() instanceof LiteralPattern lit &&
                     lit.getValue().equals(upd.getNode().getLabel()) &&
-                    variables.get(new_).getCorrespondingNodePattern() instanceof Literal lit2 &&
+                    variables.get(new_).getCorrespondingPattern() instanceof LiteralPattern lit2 &&
                     lit2.getValue().equals(upd.getValue());
         }
         return false;

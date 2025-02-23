@@ -1,9 +1,7 @@
-package bachelors.project.repr.cond;
+package bachelors.project.repr.cond.eval;
 
-import bachelors.project.repr.nodepattern.VariableContainer;
+import bachelors.project.repr.VariableContainer;
 import bachelors.project.util.DiffData;
-
-import java.util.Map;
 
 public interface Evaluatable {
     Object evaluate(VariableContainer variables, DiffData diffData);

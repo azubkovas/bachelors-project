@@ -3,6 +3,7 @@ package bachelors.project;
 import bachelors.project.repr.Definition;
 import bachelors.project.repr.changepattern.DeletePattern;
 import bachelors.project.repr.changepattern.InsertPattern;
+import bachelors.project.repr.changepattern.MovePattern;
 import bachelors.project.repr.changepattern.UpdatePattern;
 import bachelors.project.repr.cond.*;
 import bachelors.project.repr.cond.eval.ParentEval;
@@ -220,11 +221,11 @@ class ChangeFinderTest {
     }
 
     @Test
-    void testWithArithmeticTest2() throws IOException {
+    void testWithJavaTest2() throws IOException {
         // INSERT RETURN INTO BLOCK
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/arithmetic/pre/Test2.java",
-                "src/test/data/arithmetic/post/Test2.java"
+                "src/test/data/for_tests/pre/Test2.java",
+                "src/test/data/for_tests/post/Test2.java"
         );
         Definition definition = new Definition(new InsertPattern(new ReturnPattern(), new BlockPattern()), null);
         Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
@@ -232,17 +233,32 @@ class ChangeFinderTest {
     }
 
     @Test
-    void testWithArithmeticTest2Inverse() throws IOException {
+    void testWithJavaTest2Inverse() throws IOException {
         // DELETE RETURN r | PARENT(r) IS BLOCK
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/arithmetic/post/Test2.java",
-                "src/test/data/arithmetic/pre/Test2.java"
+                "src/test/data/for_tests/post/Test2.java",
+                "src/test/data/for_tests/pre/Test2.java"
         );
         Definition definition = new Definition(
                 new DeletePattern(
                         new VariablePattern("r", new ReturnPattern())
                 ),
                 new NodeTypeCondition(new ParentEval(new Variable("r")), new BlockPattern())
+        );
+        Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        assertEquals(1, changes.size());
+    }
+
+    @Test
+    void testWithCppTest3Inverse() throws IOException {
+        // MOVE ANY FROM BLOCK b TO b
+        DiffData diffData = GumTreeClient.getDiffData(
+                "src/test/data/for_tests/pre/Test3.cpp",
+                "src/test/data/for_tests/post/Test3.cpp"
+        );
+        Definition definition = new Definition(
+                new MovePattern(new AnyPattern(), new VariablePattern("b", new BlockPattern()), new VariablePattern("b")),
+                null
         );
         Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
         assertEquals(1, changes.size());

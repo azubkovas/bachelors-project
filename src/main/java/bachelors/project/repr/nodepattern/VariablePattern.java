@@ -36,7 +36,7 @@ public class VariablePattern extends NodePattern {
         } else {
             VariableValue value = variables.get(name);
             assert value != null;
-            return value.getCorrespondingPattern().matchesNode(node, variables);
+            return value.getCorrespondingNode().equals(node);
         }
     }
 

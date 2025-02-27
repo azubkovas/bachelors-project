@@ -1,7 +1,7 @@
 package bachelors.project.repr.changepattern;
 
-import bachelors.project.repr.nodepattern.NodePattern;
 import bachelors.project.repr.VariableContainer;
+import bachelors.project.repr.nodepattern.NodePattern;
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.actions.model.Insert;
 

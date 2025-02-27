@@ -1,8 +1,8 @@
 package bachelors.project.repr.cond;
 
 import bachelors.project.repr.NotWellFormedException;
-import bachelors.project.repr.cond.eval.Evaluatable;
 import bachelors.project.repr.VariableContainer;
+import bachelors.project.repr.cond.eval.Evaluatable;
 import bachelors.project.repr.cond.eval.Variable;
 import bachelors.project.repr.nodepattern.LiteralPattern;
 import bachelors.project.util.DiffData;

@@ -1,8 +1,8 @@
 package bachelors.project.repr.cond;
 
+import bachelors.project.repr.VariableContainer;
 import bachelors.project.repr.cond.eval.Evaluatable;
 import bachelors.project.repr.nodepattern.NodePattern;
-import bachelors.project.repr.VariableContainer;
 import bachelors.project.util.DiffData;
 import com.github.gumtreediff.tree.Tree;
 

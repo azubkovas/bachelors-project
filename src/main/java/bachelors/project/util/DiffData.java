@@ -1,45 +1,47 @@
 package bachelors.project.util;
 
+import com.github.gumtreediff.actions.Diff;
 import com.github.gumtreediff.actions.model.Action;
+import com.github.gumtreediff.io.DirectoryComparator;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DiffData {
-    private final Map<String, SingleFileDiffData> fileDiffs;
-    private final String prePatchRevisionPath, postPatchRevisionPath;
+    private final DirectoryComparator comparator;
+    private final Map<Path, Diff> fileDiffs;
 
-    public DiffData(String prePatchRevisionPath, String postPatchRevisionPath) {
+    public DiffData(Path prePatchRevisionPath, Path postPatchRevisionPath) {
         fileDiffs = new HashMap<>();
-        this.prePatchRevisionPath = prePatchRevisionPath;
-        this.postPatchRevisionPath = postPatchRevisionPath;
+        comparator = new DirectoryComparator(prePatchRevisionPath.toString(), postPatchRevisionPath.toString());
+        comparator.compare();
     }
 
-    public SingleFileDiffData getSingleFileDiffData(String filePath) {
-        return fileDiffs.get(filePath);
+    public Diff getFileDiff(Path prePatchFilePath) {
+        return fileDiffs.get(prePatchFilePath);
     }
 
-    public void addSingleFileDiffData(SingleFileDiffData singleFileDiffData) {
-        if (singleFileDiffData == null) {
-            return;
-        }
-        fileDiffs.put(singleFileDiffData.getFilePathPair().first, singleFileDiffData);
+    public void addFileDiff(Path prePatchFilePath, Diff diff) {
+        fileDiffs.put(prePatchFilePath, diff);
     }
 
     public Set<Action> getAllActions() {
         return fileDiffs.values().stream()
-                .map(SingleFileDiffData::getEditScript)
+                .map(x -> x.editScript)
                 .flatMap(editScript -> editScript.asList().stream())
                 .collect(Collectors.toSet());
     }
 
-    public String getPrePatchRevisionPath() {
-        return prePatchRevisionPath;
+    public DirectoryComparator getComparator() {
+        return comparator;
     }
 
-    public String getPostPatchRevisionPath() {
-        return postPatchRevisionPath;
+    public void removeNonEssentialChanges(Set<Action> nonEssentialChanges) {
+        for (Diff diff : fileDiffs.values()) {
+            diff.editScript.asList().removeAll(nonEssentialChanges);
+        }
     }
 }

@@ -7,7 +7,9 @@ import bachelors.project.util.JoernClient;
 import com.github.gumtreediff.actions.model.Action;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ChangeFinder {
     public static Set<Action> findChanges(DiffData diffData, List<Definition> definitions) throws IOException {
@@ -16,7 +18,7 @@ public class ChangeFinder {
         JoernClient.getInstance().executeQuery("""
                 if (openForInputPath("%s").isEmpty) {
                       importCode("%s")
-                   }""".formatted(diffData.getPrePatchRevisionPath(), diffData.getPrePatchRevisionPath()));
+                   }""".formatted(diffData.getComparator().getSrc().toString(), diffData.getComparator().getSrc().toString()));
         for (Definition definition : definitions) {
             for (Action action : allChanges) {
                 VariableContainer variables = new VariableContainer();
@@ -27,5 +29,4 @@ public class ChangeFinder {
         }
         return changes;
     }
-
 }

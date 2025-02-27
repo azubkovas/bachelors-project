@@ -20,25 +20,8 @@ public class Definition {
         this.condition = condition;
     }
 
-    public static List<Definition> getDefinitions(String filePath) {
-        List<Definition> definitions = new ArrayList<Definition>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                definitions.add(getDefinition(line));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return definitions;
-    }
-
     public boolean matchesAction(Action action, DiffData diffData, VariableContainer variables) {
         return pattern.matchesAction(action, variables) && (condition == null || (Boolean) condition.evaluate(variables, diffData));
-    }
-
-    public static Definition getDefinition(String defString) {
-        return null; // todo
     }
 
     public ChangePattern getPattern() {

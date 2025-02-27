@@ -1,11 +1,10 @@
 package bachelors.project.repr.cond;
 
+import bachelors.project.repr.VariableContainer;
 import bachelors.project.repr.VariableValue;
 import bachelors.project.repr.cond.eval.Variable;
-import bachelors.project.repr.VariableContainer;
 import bachelors.project.util.DiffData;
 import bachelors.project.util.JoernClient;
-import com.github.gumtreediff.tree.Tree;
 
 import java.io.IOException;
 

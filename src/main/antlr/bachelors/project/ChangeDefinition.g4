@@ -10,7 +10,7 @@ changePattern
     : 'INSERT' nodePattern 'INTO' nodePattern   #InsertPattern
     | 'DELETE' nodePattern                      #DeletePattern
     | 'UPDATE' nodePattern ID '->' ID           #UpdatePattern
-    | 'MOVE' nodePattern 'TO' nodePattern       #MovePattern
+    | 'MOVE' nodePattern 'FROM' nodePattern 'TO' nodePattern       #MovePattern
     ;
 
 nodePattern
@@ -27,11 +27,13 @@ nodePattern
 
 
 condition
-    : evaluatable 'IS' nodePattern   #NodeTypeCondition
+    : evaluatable 'IS' nodePattern          #NodeTypeCondition
     | '∃(' definition ')'                   #ExistentialQuantification
-    | evaluatable operator evaluatable              #BinaryCondition
+    | evaluatable operator evaluatable      #BinaryCondition
     | condition 'AND' condition             #AndCondition
     | condition 'OR' condition              #OrCondition
+    | 'NOT' condition                       #NotCondition
+    | ID 'REFERS TO' ID                     #RefersToCondition
     ;
 
 operator
@@ -40,7 +42,7 @@ operator
 
 evaluatable
     : 'PARENT(' evaluatable ')'             #ParentEval
-    | STRING               #StringEval
+    | STRING               #LiteralEval
     | ID                   #VariableEval
     ;
 

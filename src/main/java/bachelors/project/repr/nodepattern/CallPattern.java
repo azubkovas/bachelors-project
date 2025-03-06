@@ -3,7 +3,7 @@ package bachelors.project.repr.nodepattern;
 import bachelors.project.repr.VariableContainer;
 import com.github.gumtreediff.tree.Tree;
 
-public class Call extends NodePattern {
+public class CallPattern extends NodePattern {
     @Override
     public NodeType getNodeType() {
         return NodeType.CALL;

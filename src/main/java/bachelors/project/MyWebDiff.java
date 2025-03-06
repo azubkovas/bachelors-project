@@ -29,12 +29,10 @@ public class MyWebDiff extends AbstractDiffClient<MyWebDiff.MyWebDiffOptions> {
     public static final String BOOTSTRAP_CSS_URL = "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css";
     public static final String BOOTSTRAP_JS_URL = "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js";
     public static final String POPPER_JS_URL = " https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js";
-    private final List<Definition> definitions;
     private final DiffData diffData;
 
-    public MyWebDiff(String[] args, List<Definition> definitions, DiffData diffData) {
+    public MyWebDiff(String[] args, DiffData diffData) {
         super(args);
-        this.definitions = definitions;
         this.diffData = diffData;
     }
 

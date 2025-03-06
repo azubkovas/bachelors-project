@@ -10,6 +10,10 @@ public class LiteralPattern extends NodePattern {
         this.value = value;
     }
 
+    public LiteralPattern() {
+        this.value = null;
+    }
+
     @Override
     public NodeType getNodeType() {
         return NodeType.LITERAL;

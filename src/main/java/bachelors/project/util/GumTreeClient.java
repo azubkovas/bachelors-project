@@ -3,6 +3,7 @@ package bachelors.project.util;
 import com.github.gumtreediff.actions.Diff;
 import com.github.gumtreediff.actions.EditScriptGenerator;
 import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
+import com.github.gumtreediff.client.Run;
 import com.github.gumtreediff.gen.TreeGenerators;
 import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.matchers.Matcher;
@@ -18,6 +19,7 @@ import java.util.List;
 
 public class GumTreeClient {
     public static DiffData getDiffData(Path prePatchRevisionPath, Path postPatchRevisionPath) {
+        Run.initGenerators();
         DiffData diffData = new DiffData(prePatchRevisionPath, postPatchRevisionPath);
         for (Pair<File, File> pair : diffData.getComparator().getModifiedFiles()) {
             Diff fileDiff = getFileDiff(pair.first, pair.second);

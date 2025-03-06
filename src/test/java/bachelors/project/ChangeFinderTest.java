@@ -6,6 +6,7 @@ import bachelors.project.repr.changepattern.InsertPattern;
 import bachelors.project.repr.changepattern.MovePattern;
 import bachelors.project.repr.changepattern.UpdatePattern;
 import bachelors.project.repr.cond.*;
+import bachelors.project.repr.cond.eval.Literal;
 import bachelors.project.repr.cond.eval.ParentEval;
 import bachelors.project.repr.cond.eval.Variable;
 import bachelors.project.repr.nodepattern.*;
@@ -15,6 +16,7 @@ import com.github.gumtreediff.actions.model.Action;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -25,25 +27,24 @@ class ChangeFinderTest {
     @Test
     void testFindChangesWithDummyExample() throws IOException {
         // UPDATE LITERAL x -> y | x == ""Hello, World!"" && y == ""Hello, Friends!""
-        DiffData diffData = GumTreeClient.getDiffData("src/test/data/pre_patch/SampleProject", "src/test/data/post_patch/SampleProject");
+        DiffData diffData = GumTreeClient.getDiffData(Path.of("src/test/data/pre_patch/SampleProject"), Path.of("src/test/data/post_patch/SampleProject"));
         Definition definition = new Definition(
                 new UpdatePattern(
                         new LiteralPattern(null),
                         "x",
                         "y"
                 ),
-                new BinaryCondition(
+                new AndCondition(
                         new BinaryCondition(
                                 new Variable("x"),
-                                "\"Hello, World!\"",
+                                new Literal("\"Hello, World!\""),
                                 Operator.EQ
                         ),
                         new BinaryCondition(
                                 new Variable("y"),
-                                "\"Hello, Friends!\"",
+                                new Literal("\"Hello, Friends!\""),
                                 Operator.EQ
-                        ),
-                        Operator.AND
+                        )
                 ));
         Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
         assertEquals(1, changes.size());
@@ -53,17 +54,17 @@ class ChangeFinderTest {
     void testFindChangesWithJavaVariableRenameExample() throws IOException {
         // UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i.refersTo(l));
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/rename_casualties/java/BeforeVariableRename.java",
-                "src/test/data/rename_casualties/java/AfterVariableRename.java");
+                Path.of("src/test/data/rename_casualties/java/BeforeVariableRename.java"),
+                Path.of("src/test/data/rename_casualties/java/AfterVariableRename.java"));
         Definition definition = new Definition(
                 new UpdatePattern(
-                        new VariablePattern("i", new Identifier()),
+                        new VariablePattern("i", new IdentifierPattern()),
                         "x",
                         "y"
                 ),
                 new ExistentialQuantification(new Definition(
                         new UpdatePattern(
-                                new VariablePattern("l", new Local()),
+                                new VariablePattern("l", new LocalPattern()),
                                 "x",
                                 "y"
                         ),
@@ -77,17 +78,17 @@ class ChangeFinderTest {
     void testFindChangesWithCppVariableRenameExample() throws IOException {
         //UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i.refersTo(l));
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/rename_casualties/c++/BeforeVariableRename.cpp",
-                "src/test/data/rename_casualties/c++/AfterVariableRename.cpp");
+                Path.of("src/test/data/rename_casualties/c++/BeforeVariableRename.cpp"),
+                Path.of("src/test/data/rename_casualties/c++/AfterVariableRename.cpp"));
         Definition definition = new Definition(
                 new UpdatePattern(
-                        new VariablePattern("i", new Identifier()),
+                        new VariablePattern("i", new IdentifierPattern()),
                         "x",
                         "y"
                 ),
                 new ExistentialQuantification(new Definition(
                         new UpdatePattern(
-                                new VariablePattern("l", new Local()),
+                                new VariablePattern("l", new LocalPattern()),
                                 "x",
                                 "y"
                         ),
@@ -101,17 +102,17 @@ class ChangeFinderTest {
     void testFindChangesWithCVariableRenameExample() throws IOException {
         // UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i.refersTo(l));
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/rename_casualties/c/BeforeVariableRename.c",
-                "src/test/data/rename_casualties/c/AfterVariableRename.c");
+                Path.of("src/test/data/rename_casualties/c/BeforeVariableRename.c"),
+                Path.of("src/test/data/rename_casualties/c/AfterVariableRename.c"));
         Definition definition = new Definition(
                 new UpdatePattern(
-                        new VariablePattern("i", new Identifier()),
+                        new VariablePattern("i", new IdentifierPattern()),
                         "x",
                         "y"
                 ),
                 new ExistentialQuantification(new Definition(
                         new UpdatePattern(
-                                new VariablePattern("l", new Local()),
+                                new VariablePattern("l", new LocalPattern()),
                                 "x",
                                 "y"
                         ),
@@ -125,17 +126,17 @@ class ChangeFinderTest {
     void testFindChangesWithCsVariableRenameExample() throws IOException {
         // UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i.refersTo(l));
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/rename_casualties/c#/BeforeVariableRename.cs",
-                "src/test/data/rename_casualties/c#/AfterVariableRename.cs");
+                Path.of("src/test/data/rename_casualties/c#/BeforeVariableRename.cs"),
+                Path.of("src/test/data/rename_casualties/c#/AfterVariableRename.cs"));
         Definition definition = new Definition(
                 new UpdatePattern(
-                        new VariablePattern("i", new Identifier()),
+                        new VariablePattern("i", new IdentifierPattern()),
                         "x",
                         "y"
                 ),
                 new ExistentialQuantification(new Definition(
                         new UpdatePattern(
-                                new VariablePattern("l", new Local()),
+                                new VariablePattern("l", new LocalPattern()),
                                 "x",
                                 "y"
                         ),
@@ -149,18 +150,18 @@ class ChangeFinderTest {
     void testFindChangesWithJavaMethodRenameExample() throws IOException {
         // UPDATE CALL c x -> y | ∃(UPDATE METHOD m x -> y | c.refersTo(m));
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/rename_casualties/java/BeforeMethodRename.java",
-                "src/test/data/rename_casualties/java/AfterMethodRename.java"
+                Path.of("src/test/data/rename_casualties/java/BeforeMethodRename.java"),
+                Path.of("src/test/data/rename_casualties/java/AfterMethodRename.java")
         );
         Definition definition = new Definition(
                 new UpdatePattern(
-                        new VariablePattern("c", new Call()),
+                        new VariablePattern("c", new CallPattern()),
                         "x",
                         "y"
                 ),
                 new ExistentialQuantification(new Definition(
                         new UpdatePattern(
-                                new VariablePattern("m", new Method()),
+                                new VariablePattern("m", new MethodPattern()),
                                 "x",
                                 "y"
                         ),
@@ -174,18 +175,18 @@ class ChangeFinderTest {
     void testFindChangesWithCppMethodRenameExample() throws IOException {
         // UPDATE CALL c x -> y | ∃(UPDATE METHOD m x -> y | c.refersTo(m));
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/rename_casualties/c++/BeforeMethodRename.cpp",
-                "src/test/data/rename_casualties/c++/AfterMethodRename.cpp"
+                Path.of("src/test/data/rename_casualties/c++/BeforeMethodRename.cpp"),
+                Path.of("src/test/data/rename_casualties/c++/AfterMethodRename.cpp")
         );
         Definition definition = new Definition(
                 new UpdatePattern(
-                        new VariablePattern("c", new Call()),
+                        new VariablePattern("c", new CallPattern()),
                         "x",
                         "y"
                 ),
                 new ExistentialQuantification(new Definition(
                         new UpdatePattern(
-                                new VariablePattern("m", new Method()),
+                                new VariablePattern("m", new MethodPattern()),
                                 "x",
                                 "y"
                         ),
@@ -199,18 +200,18 @@ class ChangeFinderTest {
     void testFindChangesWithCMethodRenameExample() throws IOException {
         // UPDATE CALL c x -> y | ∃(UPDATE METHOD m x -> y | c.refersTo(m));
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/rename_casualties/c/BeforeFunctionRename.c",
-                "src/test/data/rename_casualties/c/AfterFunctionRename.c"
+                Path.of("src/test/data/rename_casualties/c/BeforeFunctionRename.c"),
+                Path.of("src/test/data/rename_casualties/c/AfterFunctionRename.c")
         );
         Definition definition = new Definition(
                 new UpdatePattern(
-                        new VariablePattern("c", new Call()),
+                        new VariablePattern("c", new CallPattern()),
                         "x",
                         "y"
                 ),
                 new ExistentialQuantification(new Definition(
                         new UpdatePattern(
-                                new VariablePattern("m", new Method()),
+                                new VariablePattern("m", new MethodPattern()),
                                 "x",
                                 "y"
                         ),
@@ -224,8 +225,8 @@ class ChangeFinderTest {
     void testWithJavaTest2() throws IOException {
         // INSERT RETURN INTO BLOCK
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/for_tests/pre/Test2.java",
-                "src/test/data/for_tests/post/Test2.java"
+                Path.of("src/test/data/for_tests/pre/Test2.java"),
+                Path.of("src/test/data/for_tests/post/Test2.java")
         );
         Definition definition = new Definition(new InsertPattern(new ReturnPattern(), new BlockPattern()), null);
         Set<Action> changes = ChangeFinder.findChanges(diffData, List.of(definition));
@@ -236,8 +237,8 @@ class ChangeFinderTest {
     void testWithJavaTest2Inverse() throws IOException {
         // DELETE RETURN r | PARENT(r) IS BLOCK
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/for_tests/post/Test2.java",
-                "src/test/data/for_tests/pre/Test2.java"
+                Path.of("src/test/data/for_tests/post/Test2.java"),
+                Path.of("src/test/data/for_tests/pre/Test2.java")
         );
         Definition definition = new Definition(
                 new DeletePattern(
@@ -253,8 +254,8 @@ class ChangeFinderTest {
     void testWithCppTest3Inverse() throws IOException {
         // MOVE ANY FROM BLOCK b TO b
         DiffData diffData = GumTreeClient.getDiffData(
-                "src/test/data/for_tests/pre/Test3.cpp",
-                "src/test/data/for_tests/post/Test3.cpp"
+                Path.of("src/test/data/for_tests/pre/Test3.cpp"),
+                Path.of("src/test/data/for_tests/post/Test3.cpp")
         );
         Definition definition = new Definition(
                 new MovePattern(new AnyPattern(), new VariablePattern("b", new BlockPattern()), new VariablePattern("b")),

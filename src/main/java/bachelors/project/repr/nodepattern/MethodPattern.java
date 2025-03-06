@@ -4,12 +4,11 @@ import bachelors.project.repr.VariableContainer;
 import bachelors.project.util.JoernClient;
 import com.github.gumtreediff.tree.Tree;
 
-public class Identifier extends NodePattern {
-    private NodePattern referee;
+public class MethodPattern extends NodePattern {
 
     @Override
     public NodeType getNodeType() {
-        return NodeType.IDENTIFIER;
+        return NodeType.METHOD;
     }
 
     @Override

@@ -24,6 +24,6 @@ public class Main {
         DiffData diffData = GumTreeClient.getDiffData(prePatchRevisionPath, postPatchRevisionPath);
         Set<Action> nonEssentialChanges = ChangeFinder.findChanges(diffData, definitions);
         diffData.removeNonEssentialChanges(nonEssentialChanges);
-        new MyWebDiff(new String[]{prePatchRevisionPath.toString(), postPatchRevisionPath.toString()}, definitions, diffData).run();
+        new MyWebDiff(new String[]{prePatchRevisionPath.toString(), postPatchRevisionPath.toString()}, diffData).run();
     }
 }

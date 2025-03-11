@@ -1,6 +1,5 @@
 package bachelors.project;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,21 +28,38 @@ public class ChangeCounterExperiment {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static void main(String[] args) throws IOException {
-        // clear the tmp directory
-        Path tmpDir = Path.of("tmp");
-        if (Files.exists(tmpDir)) {
-            Files.walk(tmpDir)
-                    .map(Path::toFile)
-                    .forEach(File::delete);
+        Path definitionsPath = Path.of("src/test/data/definitions_for_exp.txt");
+        List<Definition> definitions = ParserClient.parseDefinitions(definitionsPath);
+        Path commitHashesPath = Path.of("src/test/data/commit_hashes_for_exp.txt");
+        List<String> lines = Files.readAllLines(commitHashesPath);
+        int numOfChanges = 0;
+        int numOfFilesWorkedOn = 0;
+        for (String line : lines) {
+            try {
+                line = line.trim();
+                String[] parts = line.split(" ");
+                String cveId = parts[0].substring(0, parts[0].length() - 1);
+                System.out.println("Working on " + cveId);
+                for (int i = 1; i < parts.length; i++) {
+                    String commitSha = parts[i];
+                    downloadPreAndPostPatchRevisions(REPO_OWNER, REPO_NAME, commitSha, "patch_data/" + cveId);
+                    DiffData diffData = GumTreeClient.getDiffData(Path.of("patch_data/%s/%s/pre_patch".formatted(cveId, commitSha)),
+                            Path.of("patch_data/%s/%s/post_patch".formatted(cveId, commitSha)));
+                    Set<Action> changes = ChangeFinder.findChanges(diffData, definitions);
+                    System.out.println("Number of changes for commit " + commitSha + ": " + changes.size());
+                    numOfChanges += changes.size();
+                    numOfFilesWorkedOn++;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        downloadPreAndPostPatchRevisions(REPO_OWNER, REPO_NAME, "3631adb1342d8bbd8598802a12b63ad02c37d591");
-        DiffData diffData = GumTreeClient.getDiffData(Path.of("tmp/pre_patch/"), Path.of("tmp/post_patch/"));
-        List<Definition> definitions = ParserClient.parseDefinitions(Path.of("src/test/data/definitions_for_exp.txt"));
-        Set<Action> changes = ChangeFinder.findChanges(diffData, definitions);
-        System.out.println("Number of changes: " + changes.size());
+        System.out.println("Total number of non-essential changes detected: " + numOfChanges);
+        System.out.println("Total number of commits worked on: " + numOfFilesWorkedOn);
     }
 
-    private static void downloadPreAndPostPatchRevisions(String repoOwner, String repoName, String commitSha) throws IOException {
+    private static void downloadPreAndPostPatchRevisions(String repoOwner, String repoName, String commitSha, String parentDir) throws IOException {
+        System.out.println("Working on commit " + commitSha);
         String commitUrl = String.format("https://api.github.com/repos/%s/%s/commits/%s", repoOwner, repoName, commitSha);
         Request request = new Request.Builder()
                 .url(commitUrl)
@@ -65,8 +81,8 @@ public class ChangeCounterExperiment {
                     String urlPostPatch = file.get("raw_url").asText();
                     String rawUrlPrePatch = String.format("https://raw.githubusercontent.com/%s/%s/%s/%s", repoOwner, repoName, parentCommitSha, filename);
 
-                    downloadFile(rawUrlPrePatch, "tmp/pre_patch/" + filename);
-                    downloadFile(urlPostPatch, "tmp/post_patch/" + filename);
+                    downloadFile(rawUrlPrePatch, parentDir + '/' + commitSha + "/pre_patch/" + filename);
+                    downloadFile(urlPostPatch, parentDir + '/' + commitSha + "/post_patch/" + filename);
 
                     System.out.println("Downloaded pre-patch and post-patch versions of " + filename);
                 }

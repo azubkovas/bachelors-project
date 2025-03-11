@@ -14,6 +14,6 @@ public class IdentifierPattern extends NodePattern {
 
     @Override
     public boolean matchesNode(Tree node, VariableContainer variables) {
-        return getNodeType().matches(node.getType().name) && JoernClient.checkNodeOfRequiredType(node, getNodeType());
+        return getNodeType().matches(node.getType().name) && checkNodeOfRequiredType(node);
     }
 }

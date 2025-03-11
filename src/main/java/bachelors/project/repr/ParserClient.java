@@ -28,7 +28,7 @@ public class ParserClient {
         return definitions;
     }
 
-    protected static Definition parseDefinition(String definitionStr) {
+    public static Definition parseDefinition(String definitionStr) {
         ChangeDefinitionLexer lexer = new ChangeDefinitionLexer(CharStreams.fromString(definitionStr));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ChangeDefinitionParser parser = new ChangeDefinitionParser(tokens);

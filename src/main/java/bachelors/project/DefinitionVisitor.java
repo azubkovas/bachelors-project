@@ -62,8 +62,16 @@ public class DefinitionVisitor extends ChangeDefinitionBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitMemberPattern(ChangeDefinitionParser.MemberPatternContext ctx) {
+        return new MemberPattern();
+    }
+
+    @Override
     public Object visitVariablePattern(ChangeDefinitionParser.VariablePatternContext ctx) {
         String name = ctx.ID().getText();
+        if (ctx.nodePattern() == null) {
+            return new VariablePattern(name);
+        }
         NodePattern correspondingPattern = (NodePattern) ctx.nodePattern().accept(this);
         return new VariablePattern(name, correspondingPattern);
     }
@@ -81,9 +89,9 @@ public class DefinitionVisitor extends ChangeDefinitionBaseVisitor<Object> {
     @Override
     public Object visitLiteralEval(ChangeDefinitionParser.LiteralEvalContext ctx) {
         String text = ctx.getText();
-        if (text.startsWith("\"") && text.endsWith("\"")) {
-            text = text.substring(1, text.length() - 1);
-        }
+//        if (text.startsWith("\"") && text.endsWith("\"")) {
+//            text = text.substring(1, text.length() - 1);
+//        }
         return new Literal(text);
     }
 
@@ -91,11 +99,6 @@ public class DefinitionVisitor extends ChangeDefinitionBaseVisitor<Object> {
     public Object visitParentEval(ChangeDefinitionParser.ParentEvalContext ctx) {
         Evaluatable child = (Evaluatable) ctx.evaluatable().accept(this);
         return new ParentEval(child);
-    }
-
-    @Override
-    public Object visitOperator(ChangeDefinitionParser.OperatorContext ctx) {
-        return Operator.fromString(ctx.getText());
     }
 
     @Override
@@ -129,7 +132,7 @@ public class DefinitionVisitor extends ChangeDefinitionBaseVisitor<Object> {
     public Object visitBinaryCondition(ChangeDefinitionParser.BinaryConditionContext ctx) {
         Evaluatable left = (Evaluatable) ctx.evaluatable(0).accept(this);
         Evaluatable right = (Evaluatable) ctx.evaluatable(1).accept(this);
-        Operator operator = (Operator) ctx.operator().accept(this);
+        Operator operator = Operator.fromString(ctx.OPERATOR().getText());
         return new BinaryCondition(left, right, operator);
     }
 
@@ -151,8 +154,18 @@ public class DefinitionVisitor extends ChangeDefinitionBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitAssignmentPattern(ChangeDefinitionParser.AssignmentPatternContext ctx) {
+        return new AssignmentPattern((NodePattern) ctx.nodePattern(0).accept(this), (NodePattern) ctx.nodePattern(1).accept(this));
+    }
+
+    @Override
     public Object visitLocalPattern(ChangeDefinitionParser.LocalPatternContext ctx) {
         return new LocalPattern();
+    }
+
+    @Override
+    public Object visitFieldAccessPattern(ChangeDefinitionParser.FieldAccessPatternContext ctx) {
+        return new FieldAccessPattern();
     }
 
     @Override

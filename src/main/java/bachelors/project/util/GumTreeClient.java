@@ -5,9 +5,12 @@ import com.github.gumtreediff.actions.EditScriptGenerator;
 import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
 import com.github.gumtreediff.client.Run;
 import com.github.gumtreediff.gen.TreeGenerators;
+import com.github.gumtreediff.matchers.CompositeMatchers;
 import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.matchers.Matchers;
+import com.github.gumtreediff.matchers.heuristic.gt.GreedyBottomUpMatcher;
+import com.github.gumtreediff.matchers.heuristic.gt.GreedySubtreeMatcher;
 import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.tree.TreeContext;
 import com.github.gumtreediff.utils.Pair;
@@ -22,7 +25,7 @@ public class GumTreeClient {
         Run.initGenerators();
         DiffData diffData = new DiffData(prePatchRevisionPath, postPatchRevisionPath);
         for (Pair<File, File> pair : diffData.getComparator().getModifiedFiles()) {
-            Diff fileDiff = getFileDiff(pair.first, pair.second);
+            Diff fileDiff = getFileDiff(pair.first, pair.second, prePatchRevisionPath, postPatchRevisionPath);
             if (fileDiff != null) {
                 diffData.addFileDiff(pair.first.toPath(), fileDiff);
             }
@@ -30,14 +33,16 @@ public class GumTreeClient {
         return diffData;
     }
 
-    private static Diff getFileDiff(File beforeFile, File afterFile) {
+    private static Diff getFileDiff(File beforeFile, File afterFile, Path prePatchRevisionPath, Path postPatchRevisionPath) {
         try {
             TreeContext before = TreeGenerators.getInstance().getTree(beforeFile.toString());
-            preProcessTree(before.getRoot());
+            preProcessTree(before.getRoot(), prePatchRevisionPath, beforeFile);
             TreeContext after = TreeGenerators.getInstance().getTree(afterFile.toString());
-            preProcessTree(after.getRoot());
-            Matcher defaultMatcher = Matchers.getInstance().getMatcher();
-            MappingStore mappings = defaultMatcher.match(before.getRoot(), after.getRoot());
+            preProcessTree(after.getRoot(), postPatchRevisionPath, afterFile);
+            GreedyBottomUpMatcher buMatcher = new GreedyBottomUpMatcher();
+            buMatcher.setSizeThreshold(10000);
+            Matcher matcher = new CompositeMatchers.CompositeMatcher(new GreedySubtreeMatcher(), buMatcher);
+            MappingStore mappings = matcher.match(before.getRoot(), after.getRoot());
             EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
             return new Diff(before, after, mappings, editScriptGenerator.computeActions(mappings));
         } catch (Exception e) {
@@ -45,7 +50,10 @@ public class GumTreeClient {
         }
     }
 
-    private static void preProcessTree(Tree tree) {
+    private static void preProcessTree(Tree tree, Path revisionPath, File file) {
+        // add metadata to the tree
+        tree.setMetadata("revisionPath", revisionPath);
+        tree.setMetadata("file", file);
         // depth first traversal
         List<Tree> nodesToMerge = new ArrayList<>();
         List<Tree> nodesToRemove = new ArrayList<>();
@@ -54,6 +62,12 @@ public class GumTreeClient {
                 nodesToMerge.add(node);
             }
             if (node.getType().name.equals("block_content") && node.getParent().getType().name.equals("block")) {
+                nodesToRemove.add(node);
+            }
+            if (node.getType().name.equals("expr_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("expr")) {
+                nodesToRemove.add(node);
+            }
+            if (node.getType().name.equals("decl_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("decl")) {
                 nodesToRemove.add(node);
             }
         }

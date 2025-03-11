@@ -22,11 +22,12 @@ public class RefCondition extends Condition {
         VariableValue refererVal = (VariableValue) referer.evaluate(variables, diffData);
         VariableValue refereeVal = (VariableValue) referee.evaluate(variables, diffData);
         assert (refererVal != null && refereeVal != null);
-        String refererQuery = JoernClient.getNodeQueryOfRequiredType(refererVal.getCorrespondingNode(), refererVal.getCorrespondingPattern().getNodeType());
-        String refereeQuery = JoernClient.getNodeQueryOfRequiredType(refereeVal.getCorrespondingNode(), refereeVal.getCorrespondingPattern().getNodeType());
+        String refererQuery = refererVal.getCorrespondingPattern().getJoernQuery(refererVal.getCorrespondingNode());
+        String refereeQuery = refereeVal.getCorrespondingPattern().getJoernQuery(refereeVal.getCorrespondingNode());
         String funcName = switch (refererVal.getCorrespondingPattern().getNodeType()) {
             case IDENTIFIER -> "refsTo";
             case CALL -> "callee";
+            case FIELD_ACCESS -> "referencedMember";
             default -> throw new RuntimeException("Unsupported node type");
         };
         try {

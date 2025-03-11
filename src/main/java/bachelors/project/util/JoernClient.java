@@ -4,6 +4,7 @@ import bachelors.project.repr.nodepattern.NodeType;
 import com.github.gumtreediff.tree.Tree;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +14,7 @@ public class JoernClient {
     private Process joernProcess;
     private BufferedWriter joernWriter;
     private BufferedReader joernReader;
+    private Path currentPath;
 
     private JoernClient() throws IOException {
         ProcessBuilder builder = new ProcessBuilder("joern");
@@ -68,117 +70,44 @@ public class JoernClient {
         joernProcess.destroy();
     }
 
-    // Returns query string that can be used to obtain the equivalent node in Joern todo: deal with possible multiple outputs, add support for multiple files
-    public static String getLocalQuery(Tree node, String relativeFilePath, String name) {
-        String condition = buildConditionBasedOnParents(node);
-        return "cpg.local.name(\"%s\").where(%s)".formatted(name, condition);
-    }
-
-    public static boolean checkNodeOfRequiredType(Tree node, NodeType requiredType) {
-        return switch (requiredType) {
-            case LOCAL -> checkNodeLocal(node);
-            case IDENTIFIER -> checkNodeIdentifier(node);
-            case LITERAL -> checkNodeLiteral(node);
-            case CALL -> checkNodeCall(node);
-            case METHOD -> checkNodeMethod(node);
-            default -> throw new RuntimeException("Unsupported node type: %s".formatted(requiredType));
-        };
-    }
-
-    private static boolean checkNodeMethod(Tree node) {
-        try {
-            String name = node.getLabel();
-            String methodQuery = getMethodQuery(node, "", name);
-            String result = getInstance().executeQuery("""
-                    %s.hasNext""".formatted(methodQuery));
-            return result.equals("true");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (NullPointerException e) {
-            return false;
+    public static void setProjectToNodePath(Tree node) throws IOException {
+        Path pathOfNode = getPathOfNode(node);
+        if (!pathOfNode.equals(getInstance().getCurrentPath())) {
+            getInstance().setCurrentPath(pathOfNode);
         }
     }
 
-    private static boolean checkNodeCall(Tree node) {
-        try {
-            String name = node.getLabel();
-            String callQuery = getCallQuery(node, "", name);
-            String result = getInstance().executeQuery("""
-                    %s.hasNext""".formatted(callQuery));
-            return result.equals("true");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (NullPointerException e) {
-            return false;
+    private static Path getPathOfNode(Tree node) {
+        Tree curr = node;
+        while (curr.getMetadata("revisionPath") == null && curr.getParent() != null) {
+            curr = curr.getParent();
         }
-    }
-
-    private static boolean checkNodeLiteral(Tree node) {
-        try {
-            String identifierQuery = getLiteralQuery(node, "", node.getLabel());
-            String result = getInstance().executeQuery("""
-                    %s.hasNext""".formatted(identifierQuery));
-            return result.equals("true");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        Path path = (Path) curr.getMetadata("revisionPath");
+        if (path == null) {
+            throw new RuntimeException("Path not found for node");
         }
-    }
-
-    private static String getLiteralQuery(Tree node, String relativeFilePath, String value) {
-        String condition = buildConditionBasedOnParents(node);
-        return "cpg.literal.where(%s)".formatted(condition);
-
+        return path;
     }
 
     public static String getNodeQueryOfRequiredType(Tree node, NodeType requiredType) {
-        return switch (requiredType) {
-            case LOCAL -> getLocalQuery(node, "", node.getLabel());
-            case IDENTIFIER -> getIdentifierQuery(node, "", node.getLabel());
-            case LITERAL -> getLiteralQuery(node, "", node.getLabel());
-            case CALL -> getCallQuery(node, "", node.getLabel());
-            case METHOD -> getMethodQuery(node, "", node.getLabel());
-            default -> throw new RuntimeException("Unsupported node type: %s".formatted(requiredType));
-        };
-    }
-
-    private static boolean checkNodeIdentifier(Tree node) {
         try {
-            String identifierQuery = getIdentifierQuery(node, "", node.getLabel());
-            String result = getInstance().executeQuery("""
-                    %s.hasNext""".formatted(identifierQuery));
-            return result.equals("true");
+            setProjectToNodePath(node);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return getNodeQueryOfRequiredType(node, requiredType.getJoernName(), node.getLabel());
     }
 
-    private static boolean checkNodeLocal(Tree node) {
+    public static String getNodeQueryOfRequiredType(Tree node, String joernTypeName, String nameToFilterOn) {
         try {
-            String localQuery = getLocalQuery(node, "", node.getLabel());
-            String result = getInstance().executeQuery("""
-                    %s.hasNext""".formatted(localQuery));
-            return result.equals("true");
+            setProjectToNodePath(node);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return "cpg.%s.name(\"%s\").where(%s)".formatted(joernTypeName, nameToFilterOn, getConditionBasedOnParents(node));
     }
 
-    public static String getIdentifierQuery(Tree node, String relativeFilePath, String name) {
-        String condition = buildConditionBasedOnParents(node);
-        return "cpg.identifier.name(\"%s\").where(%s)".formatted(name, condition);
-    }
-
-    public static String getMethodQuery(Tree node, String relativeFilePath, String name) {
-        String condition = buildConditionBasedOnParents(node);
-        return "cpg.method.name(\"%s\").where(%s)".formatted(name, condition);
-    }
-
-    public static String getCallQuery(Tree node, String relativeFilePath, String name) {
-        String condition = buildConditionBasedOnParents(node);
-        return "cpg.call.name(\"%s\").where(%s)".formatted(name, condition);
-    }
-
-    private static String buildConditionBasedOnParents(Tree node) {
+    public static String getConditionBasedOnParents(Tree node) {
         List<String> steps = new ArrayList<>();
         List<Tree> parents = node.getParents();
         for (int i = 0; i < parents.size(); i++) {
@@ -193,8 +122,10 @@ public class JoernClient {
                     steps.add(".astParent.isMethod.name(\"%s\")".formatted(name));
                     break;
                 case "class":
-                    assert steps.get(steps.size() - 1).equals(".astParent.isBlock");
-                    steps.remove(steps.size() - 1);
+                    if (!steps.isEmpty()) {
+                        assert steps.get(steps.size() - 1).equals(".astParent.isBlock");
+                        steps.remove(steps.size() - 1);
+                    }
                     name = GumTreeClient.getFirstChildOfType(parent, "name").getLabel();
                     steps.add(".astParent.isTypeDecl.name(\"%s\")".formatted(name));
                     break;
@@ -216,7 +147,7 @@ public class JoernClient {
                     break;
                 case "expr":
                     Tree operator = GumTreeClient.getFirstChildOfType(parent, "operator");
-                    if (operator != null && Set.of("+", "-", "*", "/", "%", "//").contains(operator.getLabel())) {
+                    if (operator != null && Set.of("+", "-", "*", "/", "%", "//", "=").contains(operator.getLabel())) {
                         int pos = parent.getChildPosition((i > 0) ? parents.get(i - 1) : node);
                         assert pos != -1;
                         steps.add(".order(%d).astParent.isCall".formatted((pos == 0) ? 1 : 2));
@@ -234,5 +165,17 @@ public class JoernClient {
             return "x => x";
         }
         return steps.stream().reduce("_", (a, b) -> a + b);
+    }
+
+    public Path getCurrentPath() {
+        return currentPath;
+    }
+
+    public void setCurrentPath(Path currentPath) throws IOException {
+        getInstance().executeQuery("""
+                if (openForInputPath("%s").isEmpty) {
+                      importCode("%s")
+                   }""".formatted(currentPath.toString(), currentPath.toString()));
+        this.currentPath = currentPath;
     }
 }

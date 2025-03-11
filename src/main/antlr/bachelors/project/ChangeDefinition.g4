@@ -4,7 +4,7 @@ grammar ChangeDefinition;
     package bachelors.project;
 }
 
-definition: changePattern ('|' condition)? ';' EOF;
+definition: changePattern ('|' condition)?;
 
 changePattern
     : 'INSERT' nodePattern 'INTO' nodePattern   #InsertPattern
@@ -15,37 +15,42 @@ changePattern
 
 nodePattern
     : nodePattern ID   #VariablePattern
+    | ID               #VariablePattern
     | 'ANY'             #AnyPattern
     | 'BLOCK'           #BlockPattern
     | 'CALL'            #CallPattern
     | 'IDENTIFIER'      #IdentifierPattern
+    | 'FIELD ACCESS'    #FieldAccessPattern
     | 'LITERAL'         #LiteralPattern
     | 'LOCAL'           #LocalPattern
     | 'METHOD'          #MethodPattern
     | 'RETURN'          #ReturnPattern
+    | 'MEMBER'          #MemberPattern
+    | 'ASSIGNMENT(' nodePattern '=' nodePattern ')'      #AssignmentPattern
     ;
 
 
 condition
     : evaluatable 'IS' nodePattern          #NodeTypeCondition
     | '∃(' definition ')'                   #ExistentialQuantification
-    | evaluatable operator evaluatable      #BinaryCondition
+    | evaluatable OPERATOR evaluatable      #BinaryCondition
     | condition 'AND' condition             #AndCondition
     | condition 'OR' condition              #OrCondition
     | 'NOT' condition                       #NotCondition
     | ID 'REFERS TO' ID                     #RefersToCondition
     ;
 
-operator
-    : '==' | '!=' | '<' | '<=' | '>' | '>='
-    ;
-
 evaluatable
     : 'PARENT(' evaluatable ')'             #ParentEval
     | STRING               #LiteralEval
+    | NUMBER               #LiteralEval
+    | BOOL                 #LiteralEval
     | ID                   #VariableEval
     ;
 
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
-STRING: '"' (~["])* '"';
+STRING: '"' (~["\\\r\n] | '\\' .)* '"';
+NUMBER: [0-9]+ ('.' [0-9]+)?;
+BOOL: 'true' | 'false';
+OPERATOR: '==' | '!=' | '<' | '<=' | '>' | '>=';
 WS: [ \t\r\n]+ -> skip;

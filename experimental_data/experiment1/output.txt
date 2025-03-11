@@ -1,0 +1,182 @@
+00:35:25: Executing ':bachelors.project.ChangeCounterExperiment.main()'…
+
+> Task :generateGrammarSource UP-TO-DATE
+
+> Task :compileJava
+
+> Task :processResources NO-SOURCE
+> Task :classes
+Note: /Users/arsenijuszubkovas/Documents/UoE/Year_4/Final Project/Final_Project/src/main/java/bachelors/project/repr/cond/BinaryCondition.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :bachelors.project.ChangeCounterExperiment.main()
+Working on CVE-2010-2227
+Working on commit 40e5880dfc51517334acda5f12beacdec52ca283
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/AbstractHttp11Processor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/BufferedInputFilter.java
+Number of changes for commit 40e5880dfc51517334acda5f12beacdec52ca283: 1
+Working on CVE-2011-0534
+Working on commit 008447095ce8c3a8f713093d5e618f3f06f94ea8
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/InternalNioInputBuffer.java
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Number of changes for commit 008447095ce8c3a8f713093d5e618f3f06f94ea8: 2
+Working on CVE-2013-4322
+Working on commit d6a9898125f34e593de426e8c7dabb0f224fc00f
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/AbstractHttp11Processor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/AbstractHttp11Protocol.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11AprProcessor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11AprProtocol.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11NioProcessor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11NioProtocol.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11Processor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11Protocol.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/ChunkedInputFilter.java
+Downloaded pre-patch and post-patch versions of test/org/apache/coyote/http11/filters/TestChunkedInputFilter.java
+Downloaded pre-patch and post-patch versions of webapps/docs/config/http.xml
+Number of changes for commit d6a9898125f34e593de426e8c7dabb0f224fc00f: 1
+Working on commit b8cb9f5f91e9210ca107fd80f3e6acd47531daa7
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/ChunkedInputFilter.java
+Number of changes for commit b8cb9f5f91e9210ca107fd80f3e6acd47531daa7: 0
+Working on CVE-2013-4590
+Working on commit 05c84ff8304a69a30b251f207a7b93c2c882564d
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/Context.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/Globals.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/ant/ValidatorTask.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/core/ApplicationContext.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/core/StandardContext.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/startup/ContextConfig.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/startup/FailedContext.java
+Downloaded pre-patch and post-patch versions of java/org/apache/jasper/Constants.java
+Downloaded pre-patch and post-patch versions of java/org/apache/jasper/JspC.java
+Downloaded pre-patch and post-patch versions of java/org/apache/jasper/compiler/ImplicitTagLibraryInfo.java
+Downloaded pre-patch and post-patch versions of java/org/apache/jasper/compiler/JspDocumentParser.java
+Downloaded pre-patch and post-patch versions of java/org/apache/jasper/compiler/TagPluginManager.java
+Downloaded pre-patch and post-patch versions of java/org/apache/jasper/compiler/TldCache.java
+Downloaded pre-patch and post-patch versions of java/org/apache/jasper/servlet/JasperInitializer.java
+Downloaded pre-patch and post-patch versions of java/org/apache/jasper/servlet/JspCServletContext.java
+Downloaded pre-patch and post-patch versions of java/org/apache/jasper/servlet/TldScanner.java
+Downloaded pre-patch and post-patch versions of java/org/apache/tomcat/util/descriptor/DigesterFactory.java
+Downloaded pre-patch and post-patch versions of java/org/apache/tomcat/util/descriptor/LocalResolver.java
+Downloaded pre-patch and post-patch versions of java/org/apache/tomcat/util/descriptor/LocalStrings.properties
+Downloaded pre-patch and post-patch versions of java/org/apache/tomcat/util/descriptor/tagplugin/TagPluginParser.java
+Downloaded pre-patch and post-patch versions of java/org/apache/tomcat/util/descriptor/tld/TldParser.java
+Downloaded pre-patch and post-patch versions of java/org/apache/tomcat/util/descriptor/web/WebXmlParser.java
+Downloaded pre-patch and post-patch versions of test/javax/servlet/resources/TestSchemaValidation.java
+Downloaded pre-patch and post-patch versions of test/org/apache/catalina/core/TesterContext.java
+Downloaded pre-patch and post-patch versions of test/org/apache/jasper/servlet/TestTldScanner.java
+Downloaded pre-patch and post-patch versions of test/org/apache/tomcat/util/descriptor/TestLocalResolver.java
+Downloaded pre-patch and post-patch versions of test/org/apache/tomcat/util/descriptor/tld/TestTldParser.java
+Downloaded pre-patch and post-patch versions of webapps/docs/config/context.xml
+Downloaded pre-patch and post-patch versions of webapps/docs/security-howto.xml
+Number of changes for commit 05c84ff8304a69a30b251f207a7b93c2c882564d: 0
+Working on CVE-2014-0095
+Working on commit 8884dae60ace77a87ed9385442ce429e98c3a479
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/ajp/AbstractAjpProcessor.java
+Downloaded pre-patch and post-patch versions of test/org/apache/coyote/ajp/TestAbstractAjpProcessor.java
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Number of changes for commit 8884dae60ace77a87ed9385442ce429e98c3a479: 0
+Working on CVE-2014-0096
+Working on commit 970c23bfd24dfa1dcb86ed917e6c8b47dcfb4433
+Downloaded pre-patch and post-patch versions of conf/web.xml
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/Container.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/core/ContainerBase.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/core/StandardEngine.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/servlets/DefaultServlet.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/startup/FailedContext.java
+Downloaded pre-patch and post-patch versions of test/org/apache/catalina/core/TesterContext.java
+Downloaded pre-patch and post-patch versions of webapps/docs/default-servlet.xml
+Number of changes for commit 970c23bfd24dfa1dcb86ed917e6c8b47dcfb4433: 0
+Working on commit 913d94b289e056107e521dbab8e79cc72a62a331
+Downloaded pre-patch and post-patch versions of conf/web.xml
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/servlets/DefaultServlet.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/servlets/LocalStrings.properties
+Downloaded pre-patch and post-patch versions of webapps/docs/default-servlet.xml
+Number of changes for commit 913d94b289e056107e521dbab8e79cc72a62a331: 2
+Working on CVE-2014-0227
+Working on commit 593a2447e6ebe465585cfa07e93b5635dffa1c70
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/ChunkedInputFilter.java
+Number of changes for commit 593a2447e6ebe465585cfa07e93b5635dffa1c70: 1
+Working on commit 05d35d83cac820d99fac8ccfa506ad44e9b6828e
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/ChunkedInputFilter.java
+Number of changes for commit 05d35d83cac820d99fac8ccfa506ad44e9b6828e: 0
+Working on commit c7e172eee228cd5cff9d070745a102778bce3627
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/ChunkedInputFilter.java
+Number of changes for commit c7e172eee228cd5cff9d070745a102778bce3627: 0
+Working on commit a576eb895129c34ebbdf79d11ec60d934aef139f
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/ChunkedInputFilter.java
+Number of changes for commit a576eb895129c34ebbdf79d11ec60d934aef139f: 0
+Working on CVE-2014-0230
+Working on commit e28dd578fad90a6d5726ec34f3245c9f99d909a5
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/AbstractHttp11Processor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/AbstractHttp11Protocol.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11AprProcessor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11AprProtocol.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11Nio2Processor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11Nio2Protocol.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11NioProcessor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11NioProtocol.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11Processor.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/Http11Protocol.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/ChunkedInputFilter.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/IdentityInputFilter.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http11/filters/LocalStrings.properties
+Downloaded pre-patch and post-patch versions of test/org/apache/catalina/core/TestSwallowAbortedUploads.java
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Downloaded pre-patch and post-patch versions of webapps/docs/config/http.xml
+Number of changes for commit e28dd578fad90a6d5726ec34f3245c9f99d909a5: 0
+Working on commit c1357e649641844109711d60cacb98e4b5fcd3cb
+Downloaded pre-patch and post-patch versions of test/org/apache/catalina/core/TestSwallowAbortedUploads.java
+Number of changes for commit c1357e649641844109711d60cacb98e4b5fcd3cb: 0
+Working on commit 6b2cfacf749be186ea77249a979af1d4863e47ba
+Downloaded pre-patch and post-patch versions of test/org/apache/catalina/core/TestSwallowAbortedUploads.java
+Number of changes for commit 6b2cfacf749be186ea77249a979af1d4863e47ba: 0
+Working on commit fc049912464f0dcf9dede3761f38049369057e16
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/connector/mbeans-descriptors.xml
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Number of changes for commit fc049912464f0dcf9dede3761f38049369057e16: 0
+Working on CVE-2019-0221
+Working on commit 4fcdf706
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/ssi/SSIPrintenv.java
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Number of changes for commit 4fcdf706: 0
+Working on commit 44ec74c4
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/ssi/SSIPrintenv.java
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Number of changes for commit 44ec74c4: 0
+Working on CVE-2019-0232
+Working on commit 5bc4e6d7
+Downloaded pre-patch and post-patch versions of conf/web.xml
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/servlets/CGIServlet.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/servlets/LocalStrings.properties
+Downloaded pre-patch and post-patch versions of webapps/docs/cgi-howto.xml
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Downloaded pre-patch and post-patch versions of webapps/docs/security-howto.xml
+Number of changes for commit 5bc4e6d7: 0
+Working on commit 7f0221b9
+Downloaded pre-patch and post-patch versions of conf/web.xml
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/servlets/CGIServlet.java
+Downloaded pre-patch and post-patch versions of java/org/apache/catalina/servlets/LocalStrings.properties
+Downloaded pre-patch and post-patch versions of webapps/docs/cgi-howto.xml
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Downloaded pre-patch and post-patch versions of webapps/docs/security-howto.xml
+Number of changes for commit 7f0221b9: 0
+Working on CVE-2019-0199
+Working on commit 60a3af17
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http2/Stream.java
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Number of changes for commit 60a3af17: 0
+Working on CVE-2019-10072
+Working on commit 0bcd69c9
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http2/Http2UpgradeHandler.java
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http2/Stream.java
+Downloaded pre-patch and post-patch versions of webapps/docs/changelog.xml
+Number of changes for commit 0bcd69c9: 0
+Working on commit 8d14c6f2
+Downloaded pre-patch and post-patch versions of java/org/apache/coyote/http2/Http2UpgradeHandler.java
+Number of changes for commit 8d14c6f2: 0
+Total number of non-essential changes detected: 7
+Total number of commits worked on: 23
+
+BUILD SUCCESSFUL in 41m 36s
+3 actionable tasks: 2 executed, 1 up-to-date
+01:17:06: Execution finished ':bachelors.project.ChangeCounterExperiment.main()'.

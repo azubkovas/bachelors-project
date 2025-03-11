@@ -4,10 +4,10 @@ import bachelors.project.repr.VariableContainer;
 import bachelors.project.util.JoernClient;
 import com.github.gumtreediff.tree.Tree;
 
-public class LocalPattern extends NodePattern {
+public class MemberPattern extends NodePattern {
     @Override
     public NodeType getNodeType() {
-        return NodeType.LOCAL;
+        return NodeType.MEMBER;
     }
 
     @Override

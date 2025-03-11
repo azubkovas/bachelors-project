@@ -4,6 +4,7 @@ import bachelors.project.repr.VariableContainer;
 import bachelors.project.repr.nodepattern.NodePattern;
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.actions.model.Insert;
+import com.github.gumtreediff.actions.model.TreeInsert;
 
 public class InsertPattern extends ChangePattern {
     private final NodePattern insertedPattern, parentPattern;
@@ -15,9 +16,11 @@ public class InsertPattern extends ChangePattern {
 
     @Override
     public boolean matchesAction(Action action, VariableContainer variables) {
-        if (action instanceof Insert ins && insertedPattern.matchesNode(action.getNode(), variables) && parentPattern.matchesNode(ins.getParent(), variables)) {
-            return true;
-        }
-        return false;
+        return (
+                action instanceof Insert ins && insertedPattern.matchesNode(action.getNode(), variables) &&
+                        parentPattern.matchesNode(ins.getParent(), variables)
+        ) ||
+                (action instanceof TreeInsert insTree && insertedPattern.matchesNode(action.getNode(), variables) &&
+                        parentPattern.matchesNode(insTree.getParent(), variables));
     }
 }

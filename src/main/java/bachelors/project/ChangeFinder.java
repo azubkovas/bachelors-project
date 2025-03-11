@@ -15,10 +15,6 @@ public class ChangeFinder {
     public static Set<Action> findChanges(DiffData diffData, List<Definition> definitions) throws IOException {
         Set<Action> changes = new HashSet<>();
         Set<Action> allChanges = diffData.getAllActions();
-        JoernClient.getInstance().executeQuery("""
-                if (openForInputPath("%s").isEmpty) {
-                      importCode("%s")
-                   }""".formatted(diffData.getComparator().getSrc().toString(), diffData.getComparator().getSrc().toString()));
         for (Definition definition : definitions) {
             for (Action action : allChanges) {
                 VariableContainer variables = new VariableContainer();

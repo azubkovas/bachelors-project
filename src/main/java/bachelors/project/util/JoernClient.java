@@ -121,6 +121,9 @@ public class JoernClient {
                     name = parent.getLabel();
                     steps.add(".astParent.isMethod.name(\"%s\")".formatted(name));
                     break;
+                case "constructor":
+                    steps.add(".astParent.isMethod.name(\"<init>\")");
+                    break;
                 case "class":
                     if (!steps.isEmpty()) {
                         assert steps.get(steps.size() - 1).equals(".astParent.isBlock");
@@ -151,6 +154,8 @@ public class JoernClient {
                         int pos = parent.getChildPosition((i > 0) ? parents.get(i - 1) : node);
                         assert pos != -1;
                         steps.add(".order(%d).astParent.isCall".formatted((pos == 0) ? 1 : 2));
+                    } else if (operator != null && operator.getLabel().equals("!")) {
+                        steps.add(".astParent.isCall.name(\"<operator>.logicalNot\")");
                     }
                     break;
                 case "return":

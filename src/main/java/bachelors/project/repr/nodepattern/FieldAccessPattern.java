@@ -19,8 +19,10 @@ public class FieldAccessPattern extends NodePattern {
         Tree nodeToCheck = node;
         if (node.getParent().getType().name.equals("name")) nodeToCheck = node.getParent();
         StringBuilder fieldIdentifier = new StringBuilder();
+        boolean simpleName = true;
         if (!nodeToCheck.getLabel().isEmpty()) fieldIdentifier.append(nodeToCheck.getLabel());
         else if (!nodeToCheck.getChildren().isEmpty()) {
+            simpleName = false;
             for (Tree child : nodeToCheck.getChildren()) {
                 fieldIdentifier.append(child.getLabel());            }
         }
@@ -29,7 +31,9 @@ public class FieldAccessPattern extends NodePattern {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return "cpg.fieldAccess.where(%s).where(_.fieldIdentifier.canonicalName(\"%s\"))".formatted(getConditionBasedOnParents(node), fieldIdentifier.toString());
+        return simpleName ? "cpg.fieldAccess.where(%s).where(_.fieldIdentifier.canonicalName(\"%s\"))"
+                .formatted(getConditionBasedOnParents(node), fieldIdentifier.toString()) :
+                "cpg.fieldAccess.where(%s).code(\"%s\")".formatted(getConditionBasedOnParents(node), fieldIdentifier.toString());
     }
 
     @Override

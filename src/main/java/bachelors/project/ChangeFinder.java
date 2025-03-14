@@ -15,11 +15,16 @@ public class ChangeFinder {
     public static Set<Action> findChanges(DiffData diffData, List<Definition> definitions) throws IOException {
         Set<Action> changes = new HashSet<>();
         Set<Action> allChanges = diffData.getAllActions();
-        for (Definition definition : definitions) {
-            for (Action action : allChanges) {
+        for (Action action : allChanges) {
+            boolean addedToList = false;
+            for (Definition definition : definitions) {
                 VariableContainer variables = new VariableContainer();
                 if (definition.matchesAction(action, diffData, variables)) {
                     changes.add(action);
+                    addedToList = true;
+                }
+                if (addedToList) {
+                    break;
                 }
             }
         }

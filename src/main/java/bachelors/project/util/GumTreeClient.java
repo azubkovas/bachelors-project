@@ -1,5 +1,6 @@
 package bachelors.project.util;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.github.gumtreediff.actions.Diff;
 import com.github.gumtreediff.actions.EditScriptGenerator;
 import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
@@ -11,9 +12,13 @@ import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.matchers.heuristic.gt.GreedyBottomUpMatcher;
 import com.github.gumtreediff.matchers.heuristic.gt.GreedySubtreeMatcher;
+import com.github.gumtreediff.matchers.optimal.zs.ZsMatcher;
+import com.github.gumtreediff.tree.DefaultTree;
 import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.tree.TreeContext;
+import com.github.gumtreediff.tree.Type;
 import com.github.gumtreediff.utils.Pair;
+import com.github.gumtreediff.tree.TypeSet;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -39,9 +44,10 @@ public class GumTreeClient {
             preProcessTree(before.getRoot(), prePatchRevisionPath, beforeFile);
             TreeContext after = TreeGenerators.getInstance().getTree(afterFile.toString());
             preProcessTree(after.getRoot(), postPatchRevisionPath, afterFile);
-            GreedyBottomUpMatcher buMatcher = new GreedyBottomUpMatcher();
-            buMatcher.setSizeThreshold(10000);
-            Matcher matcher = new CompositeMatchers.CompositeMatcher(new GreedySubtreeMatcher(), buMatcher);
+//            GreedyBottomUpMatcher buMatcher = new GreedyBottomUpMatcher();
+//            buMatcher.setSizeThreshold(10000);
+//            Matcher matcher = new CompositeMatchers.CompositeMatcher(new GreedySubtreeMatcher(), buMatcher);
+            Matcher matcher = new CompositeMatchers.SimpleGumtree();
             MappingStore mappings = matcher.match(before.getRoot(), after.getRoot());
             EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
             return new Diff(before, after, mappings, editScriptGenerator.computeActions(mappings));
@@ -57,18 +63,18 @@ public class GumTreeClient {
         // depth first traversal
         List<Tree> nodesToMerge = new ArrayList<>();
         List<Tree> nodesToRemove = new ArrayList<>();
+        List<Tree> nestedIfStmts = new ArrayList<>();
         for (Tree node : tree.breadthFirst()) {
             if (node.getType().name.equals("function") || node.getType().name.equals("decl") || node.getType().name.equals("call")) {
                 nodesToMerge.add(node);
-            }
-            if (node.getType().name.equals("block_content") && node.getParent().getType().name.equals("block")) {
+            } else if (node.getType().name.equals("block_content") && node.getParent().getType().name.equals("block")) {
                 nodesToRemove.add(node);
-            }
-            if (node.getType().name.equals("expr_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("expr")) {
+            } else if (node.getType().name.equals("expr_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("expr")) {
                 nodesToRemove.add(node);
-            }
-            if (node.getType().name.equals("decl_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("decl")) {
+            } else if (node.getType().name.equals("decl_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("decl")) {
                 nodesToRemove.add(node);
+            } else if (node.getType().name.equals("if_stmt") && node.getChildren().size() > 1) {
+                nestedIfStmts.add(node);
             }
         }
         for (Tree node : nodesToMerge) {
@@ -81,6 +87,23 @@ public class GumTreeClient {
             siblings.addAll(children);
             node.getParent().setChildren(siblings);
         }
+        for (Tree node : nestedIfStmts) {
+            List<Tree> children = node.getChildren();
+            node.setChildren(convertToNestedIf(children));
+        }
+    }
+
+    private static List<Tree> convertToNestedIf(List<Tree> children) {
+        if (children.size() == 1) {
+            return children;
+        }
+        Tree topLevelIf = children.get(0);
+        Tree elseNode = new DefaultTree(TypeSet.type("else"));
+        Tree blockNode = new DefaultTree(TypeSet.type("block"));
+        blockNode.setChildren(convertToNestedIf(children.subList(1, children.size())));
+        elseNode.addChild(blockNode);
+        topLevelIf.addChild(elseNode);
+        return List.of(topLevelIf);
     }
 
     private static void mergeName(Tree node) {

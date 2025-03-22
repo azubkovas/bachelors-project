@@ -14,6 +14,7 @@ import java.util.List;
 public class Definition {
     private final ChangePattern pattern;
     private final Condition condition;
+    private String definitionStr;
 
     public Definition(ChangePattern pattern, Condition condition) {
         this.pattern = pattern;
@@ -30,5 +31,13 @@ public class Definition {
 
     public Condition getCondition() {
         return condition;
+    }
+
+    public String getDefinitionStr() {
+        return definitionStr;
+    }
+
+    public void setDefinitionStr(String definitionStr) {
+        this.definitionStr = definitionStr;
     }
 }

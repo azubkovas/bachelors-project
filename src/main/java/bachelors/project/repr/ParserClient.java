@@ -20,7 +20,9 @@ public class ParserClient {
         try (BufferedReader reader = new BufferedReader(new FileReader(definitionsFilePath.toFile()))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                definitions.add(parseDefinition(line));
+                Definition definition = parseDefinition(line);
+                definition.setDefinitionStr(line);
+                definitions.add(definition);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -34,7 +36,6 @@ public class ParserClient {
         ChangeDefinitionParser parser = new ChangeDefinitionParser(tokens);
         ParseTree tree = parser.definition();
         DefinitionVisitor visitor = new DefinitionVisitor();
-        Definition result = (Definition) visitor.visit(tree);
-        return result;
+        return (Definition) visitor.visit(tree);
     }
 }

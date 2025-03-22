@@ -44,4 +44,12 @@ public class DiffData {
             diff.editScript.asList().removeAll(nonEssentialChanges);
         }
     }
+
+    public void removeEssentialChanges(Set<Action> nonEssentialChanges) {
+        Set<Action> essentialChanges = getAllActions();
+        essentialChanges.removeAll(nonEssentialChanges);
+        for (Diff diff : fileDiffs.values()) {
+            diff.editScript.asList().removeAll(essentialChanges);
+        }
+    }
 }

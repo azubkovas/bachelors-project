@@ -47,7 +47,8 @@ public class GumTreeClient {
 //            GreedyBottomUpMatcher buMatcher = new GreedyBottomUpMatcher();
 //            buMatcher.setSizeThreshold(10000);
 //            Matcher matcher = new CompositeMatchers.CompositeMatcher(new GreedySubtreeMatcher(), buMatcher);
-            Matcher matcher = new CompositeMatchers.SimpleGumtree();
+//            Matcher matcher = new CompositeMatchers.SimpleGumtree();
+            Matcher matcher = Matchers.getInstance().getMatcher();
             MappingStore mappings = matcher.match(before.getRoot(), after.getRoot());
             EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
             return new Diff(before, after, mappings, editScriptGenerator.computeActions(mappings));

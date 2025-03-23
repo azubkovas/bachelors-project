@@ -1,0 +1,41 @@
+package org.defdiff.deflang;
+
+import org.defdiff.ChangeDefinitionLexer;
+import org.defdiff.ChangeDefinitionParser;
+import org.defdiff.DefinitionVisitor;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ParserClient {
+    public static List<Definition> parseDefinitions(Path definitionsFilePath) {
+        List<Definition> definitions = new ArrayList<Definition>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(definitionsFilePath.toFile()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Definition definition = parseDefinition(line);
+                definition.setDefinitionStr(line);
+                definitions.add(definition);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return definitions;
+    }
+
+    public static Definition parseDefinition(String definitionStr) {
+        ChangeDefinitionLexer lexer = new ChangeDefinitionLexer(CharStreams.fromString(definitionStr));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ChangeDefinitionParser parser = new ChangeDefinitionParser(tokens);
+        ParseTree tree = parser.definition();
+        DefinitionVisitor visitor = new DefinitionVisitor();
+        return (Definition) visitor.visit(tree);
+    }
+}

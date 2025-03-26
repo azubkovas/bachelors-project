@@ -3,7 +3,7 @@ package org.defdiff.deflang.nodepattern;
 import java.util.Map;
 
 public enum NodeType {
-    LITERAL, IDENTIFIER, LOCAL, METHOD, CALL, CONTROL_STRUCTURE, RETURN, BLOCK, MEMBER, ASSIGNMENT, FIELD_ACCESS;
+    LITERAL, IDENTIFIER, LOCAL, METHOD, CALL, CONTROL_STRUCTURE, RETURN, BLOCK, MEMBER, ASSIGNMENT, FIELD_ACCESS, EXPRESSION;
     private static final Map<NodeType, String> map = Map.of(
             LITERAL, "literal",
             IDENTIFIER, "name",
@@ -12,7 +12,8 @@ public enum NodeType {
             METHOD, "function",
             CALL, "call",
             RETURN, "return",
-            BLOCK, "block"
+            BLOCK, "block",
+            EXPRESSION, "expr"
     );
 
     public boolean matches(String name) {

@@ -5,9 +5,14 @@ import com.github.gumtreediff.actions.EditScriptGenerator;
 import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
 import com.github.gumtreediff.client.Run;
 import com.github.gumtreediff.gen.TreeGenerators;
-import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.matchers.Matcher;
-import com.github.gumtreediff.matchers.Matchers;
+import com.github.gumtreediff.matchers.*;
+import com.github.gumtreediff.matchers.heuristic.IdMatcher;
+import com.github.gumtreediff.matchers.heuristic.cd.ChangeDistillerBottomUpMatcher;
+import com.github.gumtreediff.matchers.heuristic.gt.GreedyBottomUpMatcher;
+import com.github.gumtreediff.matchers.heuristic.gt.GreedySubtreeMatcher;
+import com.github.gumtreediff.matchers.optimal.rted.RtedMatcher;
+import com.github.gumtreediff.matchers.optimal.zs.ZsMatcher;
+import com.github.gumtreediff.matchers.optimizations.CrossMoveMatcherThetaF;
 import com.github.gumtreediff.tree.DefaultTree;
 import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.tree.TreeContext;
@@ -15,6 +20,7 @@ import com.github.gumtreediff.utils.Pair;
 import com.github.gumtreediff.tree.TypeSet;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +44,8 @@ public class GumTreeClient {
             preProcessTree(before.getRoot(), prePatchRevisionPath, beforeFile);
             TreeContext after = TreeGenerators.getInstance().getTree(afterFile.toString());
             preProcessTree(after.getRoot(), postPatchRevisionPath, afterFile);
-//            GreedyBottomUpMatcher buMatcher = new GreedyBottomUpMatcher();
-//            buMatcher.setSizeThreshold(10000);
-//            Matcher matcher = new CompositeMatchers.CompositeMatcher(new GreedySubtreeMatcher(), buMatcher);
-//            Matcher matcher = new CompositeMatchers.SimpleGumtree();
             Matcher matcher = Matchers.getInstance().getMatcher();
+//            matcher.setOption(ConfigurationOptions.bu_minsize, 1000000);
             MappingStore mappings = matcher.match(before.getRoot(), after.getRoot());
             EditScriptGenerator editScriptGenerator = new SimplifiedChawatheScriptGenerator();
             return new Diff(before, after, mappings, editScriptGenerator.computeActions(mappings));
@@ -60,13 +63,16 @@ public class GumTreeClient {
         List<Tree> nodesToRemove = new ArrayList<>();
         List<Tree> nestedIfStmts = new ArrayList<>();
         for (Tree node : tree.breadthFirst()) {
-            if (node.getType().name.equals("function") || node.getType().name.equals("decl") || node.getType().name.equals("call")) {
+            if (node.getType().name.equals("function") || node.getType().name.equals("constructor") ||
+                    node.getType().name.equals("decl") || node.getType().name.equals("call") || node.getType().name.equals("type")) {
                 nodesToMerge.add(node);
             } else if (node.getType().name.equals("block_content") && node.getParent().getType().name.equals("block")) {
                 nodesToRemove.add(node);
             } else if (node.getType().name.equals("expr_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("expr")) {
                 nodesToRemove.add(node);
             } else if (node.getType().name.equals("decl_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("decl")) {
+                nodesToRemove.add(node);
+            } else if (node.getType().name.equals("comment")) {
                 nodesToRemove.add(node);
             } else if (node.getType().name.equals("if_stmt") && node.getChildren().size() > 1) {
                 nestedIfStmts.add(node);

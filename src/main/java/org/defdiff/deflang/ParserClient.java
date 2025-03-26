@@ -1,41 +1,33 @@
 package org.defdiff.deflang;
 
-import org.defdiff.ChangeDefinitionLexer;
-import org.defdiff.ChangeDefinitionParser;
-import org.defdiff.DefinitionVisitor;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.defdiff.ChangeDefinitionsLexer;
+import org.defdiff.ChangeDefinitionsParser;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ParserClient {
-    public static List<Definition> parseDefinitions(Path definitionsFilePath) {
-        List<Definition> definitions = new ArrayList<Definition>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(definitionsFilePath.toFile()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Definition definition = parseDefinition(line);
-                definition.setDefinitionStr(line);
-                definitions.add(definition);
-            }
+    public static Definitions parseDefinitions(Path definitionsFilePath) {
+        try {
+            String definitionsStr = Files.readString(definitionsFilePath);
+            return parseDefinitions(definitionsStr);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return definitions;
     }
 
-    public static Definition parseDefinition(String definitionStr) {
-        ChangeDefinitionLexer lexer = new ChangeDefinitionLexer(CharStreams.fromString(definitionStr));
+    public static Definitions parseDefinitions(String definitionsStr) {
+        ChangeDefinitionsLexer lexer = new ChangeDefinitionsLexer(CharStreams.fromString(definitionsStr));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        ChangeDefinitionParser parser = new ChangeDefinitionParser(tokens);
-        ParseTree tree = parser.definition();
-        DefinitionVisitor visitor = new DefinitionVisitor();
-        return (Definition) visitor.visit(tree);
+        ChangeDefinitionsParser parser = new ChangeDefinitionsParser(tokens);
+        ParseTree tree = parser.definitions();
+        DefinitionsVisitor visitor = new DefinitionsVisitor();
+        return (Definitions) visitor.visit(tree);
     }
+
+
 }

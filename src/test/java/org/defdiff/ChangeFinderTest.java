@@ -1,6 +1,7 @@
 package org.defdiff;
 
-import org.defdiff.deflang.Definition;
+import org.defdiff.deflang.Definitions;
+import org.defdiff.deflang.Definitions;
 import org.defdiff.deflang.ParserClient;
 import org.defdiff.util.DiffData;
 import org.defdiff.util.GumTreeClient;
@@ -17,8 +18,8 @@ class ChangeFinderTest {
     @Test
     void testFindChangesWithDummyExample() throws IOException {
         DiffData diffData = GumTreeClient.getDiffData(Path.of("src/test/data/pre_patch/SampleProject"), Path.of("src/test/data/post_patch/SampleProject"));
-        Definition definition = ParserClient.parseDefinition("UPDATE LITERAL x -> y | x == \"Hello, World!\" AND y == \"Hello, Friends!\"");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("UPDATE LITERAL x -> y | x == \"Hello, World!\" AND y == \"Hello, Friends!\"");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(1, changes.getAllChanges().size());
     }
 
@@ -27,8 +28,8 @@ class ChangeFinderTest {
         DiffData diffData = GumTreeClient.getDiffData(
                 Path.of("src/test/data/rename_casualties/java/BeforeVariableRename.java"),
                 Path.of("src/test/data/rename_casualties/java/AfterVariableRename.java"));
-        Definition definition = ParserClient.parseDefinition("UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i REFERS TO l)");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("UPDATE IDENTIFIER i x -> y | EXISTS(UPDATE LOCAL l x -> y | i REFERS TO l)");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(2, changes.getAllChanges().size());
     }
 
@@ -37,8 +38,8 @@ class ChangeFinderTest {
         DiffData diffData = GumTreeClient.getDiffData(
                 Path.of("src/test/data/rename_casualties/c++/BeforeVariableRename.cpp"),
                 Path.of("src/test/data/rename_casualties/c++/AfterVariableRename.cpp"));
-        Definition definition = ParserClient.parseDefinition("UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i REFERS TO l)");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("UPDATE IDENTIFIER i x -> y | EXISTS(UPDATE LOCAL l x -> y | i REFERS TO l)");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(2, changes.getAllChanges().size());
     }
 
@@ -47,8 +48,8 @@ class ChangeFinderTest {
         DiffData diffData = GumTreeClient.getDiffData(
                 Path.of("src/test/data/rename_casualties/c/BeforeVariableRename.c"),
                 Path.of("src/test/data/rename_casualties/c/AfterVariableRename.c"));
-        Definition definition = ParserClient.parseDefinition("UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i REFERS TO l)");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("UPDATE IDENTIFIER i x -> y | EXISTS(UPDATE LOCAL l x -> y | i REFERS TO l)");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(4, changes.getAllChanges().size());
     }
 
@@ -57,8 +58,8 @@ class ChangeFinderTest {
         DiffData diffData = GumTreeClient.getDiffData(
                 Path.of("src/test/data/rename_casualties/c#/BeforeVariableRename.cs"),
                 Path.of("src/test/data/rename_casualties/c#/AfterVariableRename.cs"));
-        Definition definition = ParserClient.parseDefinition("UPDATE IDENTIFIER i x -> y | ∃(UPDATE LOCAL l x -> y | i REFERS TO l)");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("UPDATE IDENTIFIER i x -> y | EXISTS(UPDATE LOCAL l x -> y | i REFERS TO l)");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(2, changes.getAllChanges().size());
     }
 
@@ -68,8 +69,8 @@ class ChangeFinderTest {
                 Path.of("src/test/data/rename_casualties/java/BeforeMethodRename.java"),
                 Path.of("src/test/data/rename_casualties/java/AfterMethodRename.java")
         );
-        Definition definition = ParserClient.parseDefinition("UPDATE CALL c x -> y | ∃(UPDATE METHOD m x -> y | c REFERS TO m)");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("UPDATE CALL c x -> y | EXISTS(UPDATE METHOD m x -> y | c REFERS TO m)");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(2, changes.getAllChanges().size());
     }
 
@@ -79,8 +80,8 @@ class ChangeFinderTest {
                 Path.of("src/test/data/rename_casualties/c++/BeforeMethodRename.cpp"),
                 Path.of("src/test/data/rename_casualties/c++/AfterMethodRename.cpp")
         );
-        Definition definition = ParserClient.parseDefinition("UPDATE CALL c x -> y | ∃(UPDATE METHOD m x -> y | c REFERS TO m)");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("UPDATE CALL c x -> y | EXISTS(UPDATE METHOD m x -> y | c REFERS TO m)");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(2, changes.getAllChanges().size());
     }
 
@@ -90,8 +91,8 @@ class ChangeFinderTest {
                 Path.of("src/test/data/rename_casualties/c/BeforeFunctionRename.c"),
                 Path.of("src/test/data/rename_casualties/c/AfterFunctionRename.c")
         );
-        Definition definition = ParserClient.parseDefinition("UPDATE CALL c x -> y | ∃(UPDATE METHOD m x -> y | c REFERS TO m)");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("UPDATE CALL c x -> y | EXISTS(UPDATE METHOD m x -> y | c REFERS TO m)");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(1, changes.getAllChanges().size());
     }
 
@@ -101,8 +102,8 @@ class ChangeFinderTest {
                 Path.of("src/test/data/for_tests/pre/Test2.java"),
                 Path.of("src/test/data/for_tests/post/Test2.java")
         );
-        Definition definition = ParserClient.parseDefinition("INSERT RETURN INTO BLOCK");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("INSERT RETURN INTO BLOCK");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(1, changes.getAllChanges().size());
     }
 
@@ -112,8 +113,8 @@ class ChangeFinderTest {
                 Path.of("src/test/data/for_tests/post/Test2.java"),
                 Path.of("src/test/data/for_tests/pre/Test2.java")
         );
-        Definition definition = ParserClient.parseDefinition("DELETE RETURN r | PARENT(r) IS BLOCK");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("DELETE RETURN r | PARENT(r) IS BLOCK");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(1, changes.getAllChanges().size());
     }
 
@@ -123,8 +124,8 @@ class ChangeFinderTest {
                 Path.of("src/test/data/for_tests/pre/Test3.cpp"),
                 Path.of("src/test/data/for_tests/post/Test3.cpp")
         );
-        Definition definition = ParserClient.parseDefinition("MOVE ANY FROM BLOCK b TO b");
-        ChangesContainer changes = ChangeFinder.findChanges(diffData, List.of(definition));
+        Definitions simpleDefinition = ParserClient.parseDefinitions("MOVE ANY FROM BLOCK b TO b");
+        ChangesContainer changes = ChangeFinder.findChanges(diffData, simpleDefinition);
         assertEquals(1, changes.getAllChanges().size());
     }
 }

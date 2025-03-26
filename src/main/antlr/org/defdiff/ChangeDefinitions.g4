@@ -1,10 +1,17 @@
-grammar ChangeDefinition;
+grammar ChangeDefinitions;
 
 @header {
     package org.defdiff;
 }
 
-definition: changePattern ('|' condition)?;
+definitions
+    : definition (';' definition)*;
+
+definition: simpleDefinition | compoundDefinition;
+
+compoundDefinition: '{' simpleDefinition (';' simpleDefinition)* '}';
+
+simpleDefinition: changePattern ('|' condition)?;
 
 changePattern
     : 'INSERT' nodePattern 'INTO' nodePattern   #InsertPattern
@@ -26,13 +33,16 @@ nodePattern
     | 'METHOD'          #MethodPattern
     | 'RETURN'          #ReturnPattern
     | 'MEMBER'          #MemberPattern
+    | 'EXPR'            #ExprPattern
+    | 'TYPE'            #TypePattern
+    | 'PARAMETERS'      #ParametersPattern
     | 'ASSIGNMENT(' nodePattern '=' nodePattern ')'      #AssignmentPattern
     ;
 
 
 condition
     : evaluatable 'IS' nodePattern          #NodeTypeCondition
-    | '∃(' definition ')'                   #ExistentialQuantification
+    | 'EXISTS(' simpleDefinition ')'                   #ExistentialQuantification
     | evaluatable OPERATOR evaluatable      #BinaryCondition
     | condition 'AND' condition             #AndCondition
     | condition 'OR' condition              #OrCondition

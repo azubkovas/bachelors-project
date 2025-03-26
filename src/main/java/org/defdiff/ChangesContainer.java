@@ -1,6 +1,7 @@
 package org.defdiff;
 
 import org.defdiff.deflang.Definition;
+import org.defdiff.deflang.SimpleDefinition;
 import com.github.gumtreediff.actions.model.Action;
 
 import java.util.HashMap;
@@ -15,15 +16,15 @@ public class ChangesContainer {
         this.changes = new HashMap<>();
     }
 
-    public void addChange(Definition definition, Action action) {
-        if (!changes.containsKey(definition)) {
-            changes.put(definition, new HashSet<>());
+    public void addChanges(Definition definition, Set<Action> changes) {
+        if (!this.changes.containsKey(definition)) {
+            this.changes.put(definition, new HashSet<>());
         }
-        changes.get(definition).add(action);
+        this.changes.get(definition).addAll(changes);
     }
 
-    public Set<Action> getChanges(Definition definition) {
-        return changes.get(definition);
+    public Set<Action> getChanges(SimpleDefinition simpleDefinition) {
+        return changes.get(simpleDefinition);
     }
 
     public Set<Action> getAllChanges() {
@@ -36,13 +37,13 @@ public class ChangesContainer {
 
     public void printChangeCounts() {
         for (Map.Entry<Definition, Set<Action>> entry : changes.entrySet()) {
-            System.out.println("Number of changes matching " + entry.getKey().getDefinitionStr() + ": " + entry.getValue().size());
+            System.out.println("Number of changes matching " + entry.getKey().toString() + ": " + entry.getValue().size());
         }
     }
 
     public void printChanges() {
         for (Map.Entry<Definition, Set<Action>> entry : changes.entrySet()) {
-            System.out.println("Changes matching " + entry.getKey().getDefinitionStr() + ":");
+            System.out.println("Changes matching " + entry.getKey().toString() + ":");
             for (Action action : entry.getValue()) {
                 System.out.println(action.toString());
             }

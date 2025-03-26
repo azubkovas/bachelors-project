@@ -6,7 +6,7 @@ class ParserClientTest {
 
     @Test
     void testParseDefinitions() {
-        Definition definition = ParserClient.parseDefinition("INSERT LITERAL l INTO BLOCK | l == \"1\"");
-        System.out.println(definition);
+        Definitions simpleDefinition = ParserClient.parseDefinitions("INSERT LITERAL l INTO BLOCK | l == \"1\"");
+        System.out.println(simpleDefinition);
     }
 }

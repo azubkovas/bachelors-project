@@ -151,6 +151,16 @@ public class DefinitionsVisitor extends ChangeDefinitionsBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitTypePattern(TypePatternContext ctx) {
+        return new TypePattern();
+    }
+
+    @Override
+    public Object visitParametersPattern(ParametersPatternContext ctx) {
+        return new ParametersPattern();
+    }
+
+    @Override
     public Object visitOrCondition(OrConditionContext ctx) {
         Condition left = (Condition) ctx.condition(0).accept(this);
         Condition right = (Condition) ctx.condition(1).accept(this);

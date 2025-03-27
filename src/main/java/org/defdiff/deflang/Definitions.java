@@ -14,7 +14,7 @@ public class Definitions {
 
     public void filterChanges(DiffData diffData, ChangesContainer changesContainer) {
         for (Definition definition : definitions) {
-            changesContainer.addChanges(definition, definition.filterChanges(diffData, changesContainer, new VariableContainer()));
+            changesContainer.addChanges(definition, definition.filterChanges(diffData, new VariableContainer()));
         }
     }
 }

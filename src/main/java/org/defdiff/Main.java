@@ -17,7 +17,6 @@ public class Main {
         Definitions definitions = ParserClient.parseDefinitions(nonEssentialChangeDefinitionsFilePath);
 
         DiffData diffData = GumTreeClient.getDiffData(prePatchRevisionPath, postPatchRevisionPath);
-        new MyWebDiff(new String[]{"experimental_data/experiment2/patch_data/CVE-2011-1088/ece65c1a428094b1c6c17de3d7593f64e1bb1286/pre_patch/java/org/apache/catalina/core/StandardWrapper.java", "experimental_data/experiment2/patch_data/CVE-2011-1088/ece65c1a428094b1c6c17de3d7593f64e1bb1286/post_patch/java/org/apache/catalina/core/StandardWrapper.java"}, diffData).run();
         ChangesContainer nonEssentialChanges = ChangeFinder.findChanges(diffData, definitions);
         System.out.println("Total number of non-essential changes: " + nonEssentialChanges.getAllChanges().size());
         nonEssentialChanges.printChangeCounts();

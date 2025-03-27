@@ -70,6 +70,8 @@ public class GumTreeClient {
                 nodesToRemove.add(node);
             } else if (node.getType().name.equals("expr_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("expr")) {
                 nodesToRemove.add(node);
+            } else if (node.getType().name.equals("expr") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("call")) {
+                nodesToRemove.add(node);
             } else if (node.getType().name.equals("decl_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("decl")) {
                 nodesToRemove.add(node);
             } else if (node.getType().name.equals("comment")) {

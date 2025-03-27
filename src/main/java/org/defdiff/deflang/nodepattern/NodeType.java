@@ -3,21 +3,25 @@ package org.defdiff.deflang.nodepattern;
 import java.util.Map;
 
 public enum NodeType {
-    LITERAL, IDENTIFIER, LOCAL, METHOD, CALL, CONTROL_STRUCTURE, RETURN, BLOCK, MEMBER, ASSIGNMENT, FIELD_ACCESS, EXPRESSION;
-    private static final Map<NodeType, String> map = Map.of(
-            LITERAL, "literal",
-            IDENTIFIER, "name",
-            LOCAL, "decl",
-            MEMBER, "decl",
-            METHOD, "function",
-            CALL, "call",
-            RETURN, "return",
-            BLOCK, "block",
-            EXPRESSION, "expr"
-    );
+    LITERAL, IDENTIFIER, LOCAL, METHOD, CALL, CONTROL_STRUCTURE, RETURN, BLOCK, MEMBER, ASSIGNMENT,
+    FIELD_ACCESS, EXPRESSION, TYPE, PARAMETERS;
 
     public boolean matches(String name) {
-        return map.get(this).equals(name);
+        return switch (this) {
+            case LITERAL -> name.equals("literal");
+            case IDENTIFIER -> name.equals("name");
+            case LOCAL, MEMBER -> name.equals("decl");
+            case METHOD -> name.equals("function");
+            case CALL -> name.equals("call");
+            case CONTROL_STRUCTURE -> name.equals("if_stmt") || name.equals("while_stmt") || name.equals("for_stmt");
+            case RETURN -> name.equals("return");
+            case BLOCK -> name.equals("block");
+            case ASSIGNMENT -> name.equals("assign");
+            case FIELD_ACCESS -> name.equals("fieldAccess");
+            case EXPRESSION -> name.equals("expr");
+            case TYPE -> name.equals("type");
+            case PARAMETERS -> name.equals("parameter_list");
+        };
     }
 
     public String getJoernName() {

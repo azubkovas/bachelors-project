@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class SimpleDefinition extends Definition {
     @Override
-    public Set<Action> filterChanges(DiffData diffData, ChangesContainer changesContainer, VariableContainer variables) {
+    public Set<Action> filterChanges(DiffData diffData, VariableContainer variables) {
         Set<Action> matchingActions = new HashSet<>();
         for (Action action : diffData.getAllActions()) {
             VariableContainer vars = new VariableContainer(variables);

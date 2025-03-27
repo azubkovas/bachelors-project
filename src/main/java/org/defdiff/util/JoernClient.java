@@ -148,6 +148,9 @@ public class JoernClient {
                 case "for":
                     steps.add(".astParent.isControlStructure.controlStructureType(\"FOR\")");
                     break;
+                case "try":
+                    steps.add(".astParent.isControlStructure.controlStructureType(\"TRY\")");
+                    break;
                 case "expr":
                     Tree operator = GumTreeClient.getFirstChildOfType(parent, "operator");
                     if (operator != null && Set.of("+", "-", "*", "/", "%", "//", "=").contains(operator.getLabel())) {

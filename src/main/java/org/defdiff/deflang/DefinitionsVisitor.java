@@ -1,5 +1,6 @@
 package org.defdiff.deflang;
 
+import org.antlr.v4.runtime.tree.Tree;
 import org.defdiff.ChangeDefinitionsBaseVisitor;
 import org.defdiff.ChangeDefinitionsParser.*;
 import org.defdiff.deflang.changepattern.*;
@@ -25,7 +26,7 @@ public class DefinitionsVisitor extends ChangeDefinitionsBaseVisitor<Object> {
         for (SimpleDefinitionContext simpleDefinitionContext : ctx.simpleDefinition()) {
             simpleDefinitions.add((SimpleDefinition) simpleDefinitionContext.accept(this));
         }
-        return new CompoundDefinition(simpleDefinitions);
+        return new CompoundDefinition(simpleDefinitions, printTree(ctx));
     }
 
     @Override
@@ -50,7 +51,7 @@ public class DefinitionsVisitor extends ChangeDefinitionsBaseVisitor<Object> {
     public SimpleDefinition visitSimpleDefinition(SimpleDefinitionContext ctx) {
         ChangePattern changePattern = (ChangePattern) ctx.changePattern().accept(this);
         Condition condition = ctx.condition() == null ? null : (Condition) ctx.condition().accept(this);
-        return new SimpleDefinition(changePattern, condition);
+        return new SimpleDefinition(changePattern, condition, printTree(ctx));
     }
 
     @Override
@@ -227,5 +228,16 @@ public class DefinitionsVisitor extends ChangeDefinitionsBaseVisitor<Object> {
     @Override
     public Object visitAnyPattern(AnyPatternContext ctx) {
         return new AnyPattern();
+    }
+
+    private String printTree(Tree t) {
+        if (t.getChildCount() == 0) {
+            return t.toString();
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < t.getChildCount(); i++) {
+            sb.append(printTree(t.getChild(i))).append(" ");
+        }
+        return sb.toString();
     }
 }

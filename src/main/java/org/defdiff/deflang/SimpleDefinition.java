@@ -25,7 +25,8 @@ public class SimpleDefinition extends Definition {
     private final Condition condition;
     private String definitionStr;
 
-    public SimpleDefinition(ChangePattern pattern, Condition condition) {
+    public SimpleDefinition(ChangePattern pattern, Condition condition, String definitionStr) {
+        super(definitionStr);
         this.pattern = pattern;
         this.condition = condition;
     }

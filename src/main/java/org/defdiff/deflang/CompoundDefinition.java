@@ -13,7 +13,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CompoundDefinition extends Definition {
     private final List<SimpleDefinition> simpleDefinitions;
 
-    public CompoundDefinition(List<SimpleDefinition> simpleDefinitions) {
+    public CompoundDefinition(List<SimpleDefinition> simpleDefinitions, String definitionStr) {
+        super(definitionStr);
         this.simpleDefinitions = simpleDefinitions;
     }
 

@@ -10,8 +10,8 @@ import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        Path prePatchRevisionPath = Path.of("experimental_data/experiment3/patch_data/b8cb9f5f91e9210ca107fd80f3e6acd47531daa7 (CVE-2013-4322)/pre_patch");
-        Path postPatchRevisionPath = Path.of("experimental_data/experiment3/patch_data/b8cb9f5f91e9210ca107fd80f3e6acd47531daa7 (CVE-2013-4322)/post_patch");
+        Path prePatchRevisionPath = Path.of("experimental_data/experiment3/patch_data/e28dd578fad90a6d5726ec34f3245c9f99d909a5 (CVE-2014-0230)/pre_patch");
+        Path postPatchRevisionPath = Path.of("experimental_data/experiment3/patch_data/e28dd578fad90a6d5726ec34f3245c9f99d909a5 (CVE-2014-0230)/post_patch");
         Path nonEssentialChangeDefinitionsFilePath = Path.of("experimental_data/experiment3/definitions.txt");
 
         Definitions definitions = ParserClient.parseDefinitions(nonEssentialChangeDefinitionsFilePath);

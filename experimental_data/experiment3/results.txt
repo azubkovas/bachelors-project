@@ -80,3 +80,67 @@ DETECTED:
 variable set (ChunkedInputFilter(int maxTrailerSize, int maxExtensionSize))
 RESULT:
 1/1
+
+d6a9898125f34e593de426e8c7dabb0f224fc00f (CVE-2013-4322):
+GT:
+method call API change (AbstractHttp11Processor.initializeFilters(int maxTrailerSize, int maxExtensionSize))
+add getter (AbstractHttp11Protocol.getMaxExtensionSize)
+add setter (AbstractHttp11Protocol.setMaxExtensionSize)
+method call API change (Http11AprProcessor(int headerBufferSize, AprEndpoint endpoint, int maxTrailerSize, int maxExtensionSize))
+method call API change (Http11AprProtocol.createProcessor())
+method call API change (Http11NioProcessor(int maxHttpHeaderSize, NioEndpoint endpoint, int maxTrailerSize, int maxExtensionSize))
+method call API change (Http11NioProtocol.createProcessor())
+method call API change (Http11Processor(int headerBufferSize, JIoEndpoint endpoint, int maxTrailerSize, int maxExtensionSize))
+method call API change (Http11Protocol.createProcessor())
+variable set (ChunkedInputFilter(int maxTrailerSize, int maxExtensionSize))
+variable set (ChunkedInputFilter.recycle())
+DETECTED:
+variable set (ChunkedInputFilter.recycle())
+variable set (ChunkedInputFilter(int maxTrailerSize, int maxExtensionSize))
+RESULT:
+2/11
+
+TODO---------------------------------------------------
+05c84ff8304a69a30b251f207a7b93c2c882564d (CVE-2013-4590):
+GT:
+DETECTED:
+RESULT:
+TODO---------------------------------------------------
+
+8884dae60ace77a87ed9385442ce429e98c3a479 (CVE-2014-0095):
+GT:
+variable set delete (recycle(boolean socketClosing))
+??? casualty (refillReadBuffer(boolean block))
+variable set delete (prepareRequest())
+DETECTED:
+RESULT:
+0/3
+
+593a2447e6ebe465585cfa07e93b5635dffa1c70 (CVE-2014-0227):
+GT:
+variable set (recycle())
+DETECTED:
+variable set (recycle())
+RESULT:
+1/1
+
+e28dd578fad90a6d5726ec34f3245c9f99d909a5 (CVE-2014-0230):
+GT:
+method call API change (java/org/apache/coyote/http11/AbstractHttp11Processor.java.initializeFilters(int maxTrailerSize, int maxExtensionSize, int maxSwallowSize)) (new IdentityInputFilter(maxSwallowSize))
+method call API change (java/org/apache/coyote/http11/AbstractHttp11Processor.java.initializeFilters(int maxTrailerSize, int maxExtensionSize, int maxSwallowSize)) (new ChunkedInputFilter(maxTrailerSize, maxExtensionSize, maxSwallowSize)))
+add getter (AbstractHttp11Protocol.getMaxSwallowSize)
+add setter (AbstractHttp11Protocol.setMaxSwallowSize)
+method call API change (Http11AprProcessor(int headerBufferSize, AprEndpoint endpoint, int maxTrailerSize, int maxExtensionSize, int maxSwallowSize))
+method call API change (Http11AprProtocol.createProcessor())
+method call API change (Http11Nio2Processor(...))
+method call API change (Http11Nio2Protocol.createProcessor())
+method call API change (Http11NioProcessor(...))
+method call API change (Http11NioProtocol.createProcessor())
+method call API change (Http11Processor(...))
+method call API change (Http11Protocol.createProcessor())
+variable set (ChunkedInputFilter(int maxTrailerSize, int maxExtensionSize, int maxSwallowSize))
+variable set (IdentityInputFilter(int maxSwallowSize))
+DETECTED:
+variable set (ChunkedInputFilter(int maxTrailerSize, int maxExtensionSize, int maxSwallowSize))
+RESULT:
+1/14

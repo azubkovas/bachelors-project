@@ -1,6 +1,5 @@
 package org.defdiff.deflang;
 
-import org.defdiff.ChangesContainer;
 import org.defdiff.deflang.changepattern.ChangePattern;
 import org.defdiff.deflang.cond.Condition;
 import org.defdiff.util.DiffData;

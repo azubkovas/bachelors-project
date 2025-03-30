@@ -15,6 +15,11 @@ import java.util.List;
 
 public class DefinitionsVisitor extends ChangeDefinitionsBaseVisitor<Object> {
     @Override
+    public SetterCondition visitSetterCondition(SetterConditionContext ctx) {
+        return new SetterCondition((Evaluatable) ctx.evaluatable(0).accept(this), (Evaluatable) ctx.evaluatable(1).accept(this));
+    }
+
+    @Override
     public Object visitCompoundDefinition(CompoundDefinitionContext ctx) {
         List<SimpleDefinition> simpleDefinitions = new ArrayList<>();
         for (SimpleDefinitionContext simpleDefinitionContext : ctx.simpleDefinition()) {
@@ -169,8 +174,8 @@ public class DefinitionsVisitor extends ChangeDefinitionsBaseVisitor<Object> {
 
     @Override
     public Object visitRefersToCondition(RefersToConditionContext ctx) {
-        Variable referer = new Variable(ctx.ID(0).getText());
-        Variable referee = new Variable(ctx.ID(1).getText());
+        Variable referer = new Variable(ctx.evaluatable(0).getText());
+        Variable referee = new Variable(ctx.evaluatable(1).getText());
         return new RefCondition(referer, referee);
     }
 

@@ -16,7 +16,7 @@ public class NodeTypeCondition extends Condition {
     }
 
     @Override
-    public Object evaluate(VariableContainer variables, DiffData diffData) {
+    public Boolean evaluate(VariableContainer variables, DiffData diffData) {
         return pattern.matchesNode((Tree) target.evaluate(variables, diffData), variables);
     }
 }

@@ -6,7 +6,7 @@ import org.defdiff.util.DiffData;
 import java.util.List;
 
 public class Definitions {
-    private List<Definition> definitions;
+    private final List<Definition> definitions;
 
     public Definitions(List<Definition> definitions) {
         this.definitions = definitions;

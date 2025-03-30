@@ -43,3 +43,4 @@ bin/
 workspace/
 experimental_data/experiment1/patch_data/
 experimental_data/experiment2/patch_data
+experimental_data/experiment3/patch_data

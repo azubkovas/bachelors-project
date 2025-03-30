@@ -98,7 +98,7 @@ public class JoernClient {
         return getNodeQueryOfRequiredType(node, requiredType.getJoernName(), node.getLabel());
     }
 
-    public static String getNodeQueryOfRequiredType(Tree node, String joernTypeName, String nameToFilterOn) {
+    private static String getNodeQueryOfRequiredType(Tree node, String joernTypeName, String nameToFilterOn) {
         try {
             setProjectToNodePath(node);
         } catch (IOException e) {

@@ -2,7 +2,6 @@ package org.defdiff.deflang;
 
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.utils.Pair;
-import org.defdiff.ChangesContainer;
 import org.defdiff.util.DiffData;
 
 import java.util.HashSet;
@@ -12,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CompoundDefinition extends Definition {
-    private List<SimpleDefinition> simpleDefinitions;
+    private final List<SimpleDefinition> simpleDefinitions;
 
     public CompoundDefinition(List<SimpleDefinition> simpleDefinitions) {
         this.simpleDefinitions = simpleDefinitions;

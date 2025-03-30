@@ -5,7 +5,7 @@ grammar ChangeDefinitions;
 }
 
 definitions
-    : definition (';' definition)*;
+    : definition (';' definition)* EOF | EOF;
 
 definition: simpleDefinition | compoundDefinition;
 
@@ -47,7 +47,8 @@ condition
     | condition 'AND' condition             #AndCondition
     | condition 'OR' condition              #OrCondition
     | 'NOT' condition                       #NotCondition
-    | ID 'REFERS TO' ID                     #RefersToCondition
+    | evaluatable 'REFERS TO' evaluatable                     #RefersToCondition
+    | evaluatable 'IS SETTER FOR' evaluatable                            #SetterCondition
     ;
 
 evaluatable
@@ -58,7 +59,7 @@ evaluatable
     | ID                   #VariableEval
     ;
 
-ID: [a-zA-Z_][a-zA-Z0-9_]*;
+ID: [a-z][a-zA-Z0-9_]*;
 STRING: '"' (~["\\\r\n] | '\\' .)* '"';
 NUMBER: [0-9]+ ('.' [0-9]+)?;
 BOOL: 'true' | 'false';

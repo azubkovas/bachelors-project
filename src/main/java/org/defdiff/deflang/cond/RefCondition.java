@@ -18,7 +18,7 @@ public class RefCondition extends Condition {
     }
 
     @Override
-    public Object evaluate(VariableContainer  variables, DiffData diffData) {
+    public Boolean evaluate(VariableContainer  variables, DiffData diffData) {
         VariableValue refererVal = (VariableValue) referer.evaluate(variables, diffData);
         VariableValue refereeVal = (VariableValue) referee.evaluate(variables, diffData);
         assert (refererVal != null && refereeVal != null);

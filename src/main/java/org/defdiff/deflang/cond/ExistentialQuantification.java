@@ -13,7 +13,7 @@ public class ExistentialQuantification extends Condition {
     }
 
     @Override
-    public Object evaluate(VariableContainer variables, DiffData diffData) {
+    public Boolean evaluate(VariableContainer variables, DiffData diffData) {
         for (Action action : diffData.getAllActions()) {
             VariableContainer innerVariables = new VariableContainer(variables);
             if (simpleDefinition.matchesAction(action, diffData, innerVariables)) return true;

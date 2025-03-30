@@ -1,0 +1,10 @@
+ece65c1a428094b1c6c17de3d7593f64e1bb1286 (CVE-2011-1088):
+ground truth:
+method extraction (processServletSecurityAnnotation)
+add setter (setServletSecurityAnnotationScanRequired)
+detected:
+method extraction(processServletSecurityAnnotation)
+add setter(setServletSecurityAnnotationScanRequired)
+result:
+1/2
+

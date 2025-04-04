@@ -61,9 +61,16 @@ public class DefinitionsVisitor extends ChangeDefinitionsBaseVisitor<Object> {
 
     @Override
     public InsertPattern visitInsertPattern(InsertPatternContext ctx) {
+        String at = null;
+        if (ctx.ID() != null) {
+            at = ctx.ID().getText();
+        }
+        else if (ctx.NUMBER() != null) {
+            at = ctx.NUMBER().getText();
+        }
         NodePattern inserted = (NodePattern) ctx.nodePattern(0).accept(this);
         NodePattern parent = (NodePattern) ctx.nodePattern(1).accept(this);
-        return new InsertPattern(inserted, parent);
+        return new InsertPattern(inserted, parent, at);
     }
 
     @Override
@@ -82,10 +89,17 @@ public class DefinitionsVisitor extends ChangeDefinitionsBaseVisitor<Object> {
 
     @Override
     public Object visitMovePattern(MovePatternContext ctx) {
+        String at = null;
+        if (ctx.ID() != null) {
+            at = ctx.ID().getText();
+        }
+        else if (ctx.NUMBER() != null) {
+            at = ctx.NUMBER().getText();
+        }
         NodePattern movedPattern = (NodePattern) ctx.nodePattern(0).accept(this);
         NodePattern oldParentPattern = (NodePattern) ctx.nodePattern(1).accept(this);
         NodePattern newParentPattern = (NodePattern) ctx.nodePattern(2).accept(this);
-        return new MovePattern(movedPattern, oldParentPattern, newParentPattern);
+        return new MovePattern(movedPattern, oldParentPattern, newParentPattern, at);
     }
 
     @Override
@@ -126,6 +140,47 @@ public class DefinitionsVisitor extends ChangeDefinitionsBaseVisitor<Object> {
     @Override
     public Object visitVariableEval(VariableEvalContext ctx) {
         return new Variable(ctx.ID().getText());
+    }
+
+    @Override
+    public String visitControlStructureType(ControlStructureTypeContext ctx) {
+        return switch (ctx.getText()) {
+            case "IF" -> "if";
+            case "ELSE" -> "else";
+            case "WHILE" -> "while";
+            case "FOR" -> "for";
+            case "DO WHILE" -> "do";
+            case "SWITCH" -> "switch";
+            case "TRY" -> "try";
+            case "CATCH" -> "catch";
+            case "FINALLY" -> "finally";
+            default -> null;
+        };
+    }
+
+    @Override
+    public Object visitControlStructurePattern(ControlStructurePatternContext ctx) {
+        return new ControlStructurePattern((String) ctx.controlStructureType().accept(this));
+    }
+
+    @Override
+    public Object visitGetterCondition(GetterConditionContext ctx) {
+        return new GetterCondition((Evaluatable) ctx.evaluatable(0).accept(this), (Evaluatable) ctx.evaluatable(1).accept(this));
+    }
+
+    @Override
+    public Object visitArgumentsPattern(ArgumentsPatternContext ctx) {
+        return new ArgumentsPattern();
+    }
+
+    @Override
+    public Object visitParameterPattern(ParameterPatternContext ctx) {
+        return new ParameterPattern();
+    }
+
+    @Override
+    public Object visitArgumentPattern(ArgumentPatternContext ctx) {
+        return new ArgumentPattern();
     }
 
     @Override

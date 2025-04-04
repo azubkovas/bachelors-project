@@ -1,5 +1,6 @@
 package org.defdiff.util;
 
+import com.github.gumtreediff.actions.ChawatheScriptGenerator;
 import com.github.gumtreediff.actions.Diff;
 import com.github.gumtreediff.actions.EditScriptGenerator;
 import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
@@ -18,6 +19,7 @@ import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.tree.TreeContext;
 import com.github.gumtreediff.utils.Pair;
 import com.github.gumtreediff.tree.TypeSet;
+import org.defdiff.deflang.nodepattern.NodeType;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,13 +61,13 @@ public class GumTreeClient {
         tree.setMetadata("revisionPath", revisionPath);
         tree.setMetadata("file", file);
         // depth first traversal
-        List<Tree> nodesToMerge = new ArrayList<>();
+        List<Tree> nodesWithNames = new ArrayList<>();
         List<Tree> nodesToRemove = new ArrayList<>();
         List<Tree> nestedIfStmts = new ArrayList<>();
         for (Tree node : tree.breadthFirst()) {
-            if (node.getType().name.equals("function") || node.getType().name.equals("constructor") ||
+            if (node.getType().name.equals("function") || node.getType().name.equals("constructor") || node.getType().name.equals("class") ||
                     node.getType().name.equals("decl") || node.getType().name.equals("call") || node.getType().name.equals("type")) {
-                nodesToMerge.add(node);
+                nodesWithNames.add(node);
             } else if (node.getType().name.equals("block_content") && node.getParent().getType().name.equals("block")) {
                 nodesToRemove.add(node);
             } else if (node.getType().name.equals("expr_stmt") && node.getChildren().size() == 1 && node.getChild(0).getType().name.equals("expr")) {
@@ -76,11 +78,13 @@ public class GumTreeClient {
                 nodesToRemove.add(node);
             } else if (node.getType().name.equals("comment")) {
                 nodesToRemove.add(node);
+            } else if (node.getType().name.equals("block") && node.getParent().getType().name.equals("class")) {
+                nodesToRemove.add(node);
             } else if (node.getType().name.equals("if_stmt") && node.getChildren().size() > 1) {
                 nestedIfStmts.add(node);
             }
         }
-        for (Tree node : nodesToMerge) {
+        for (Tree node : nodesWithNames) {
             mergeName(node);
         }
         for (Tree node : nodesToRemove) {
@@ -116,6 +120,9 @@ public class GumTreeClient {
             if (!nameNode.getChildren().isEmpty()) {
                 label = new StringBuilder();
                 for (Tree child : nameNode.getChildren()) {
+                    if (child.getType().name.equals("parameter_list")) {
+                        node.insertChild(child, node.getChildPosition(nameNode));
+                    }
                     label.append(child.getLabel());
                 }
             }
@@ -133,6 +140,37 @@ public class GumTreeClient {
     public static Tree getLastChildOfType(Tree parent, String type) {
         List<Tree> listOfRelevantNodes = parent.getChildren().stream().filter(child -> child.getType().name.equals(type)).toList();
         return listOfRelevantNodes.isEmpty() ? null : listOfRelevantNodes.get(listOfRelevantNodes.size() - 1);
+    }
+
+    public static Tree getFirstParentOfType(Tree child, String type) {
+        Tree parent = child.getParent();
+        while (parent != null && !type.equals(parent.getType().name)) {
+            parent = parent.getParent();
+        }
+        return parent;
+    }
+
+    public static String getSuperClass(Tree classNode) {
+        if (classNode == null)
+            return null;
+        Tree superListNode = getFirstChildOfType(classNode, "super_list");
+        if (superListNode == null)
+            return null;
+        Tree extendsNode = getFirstChildOfType(superListNode, "extends");
+        if (extendsNode == null)
+            return null;
+        Tree superNode = getFirstChildOfType(extendsNode, "super");
+        if (superNode == null)
+            return null;
+        Tree nameNode = getFirstChildOfType(superNode, "name");
+        if (nameNode == null)
+            return null;
+        if (nameNode.hasLabel() && !nameNode.getLabel().isBlank())
+            return nameNode.getLabel();
+        Tree nameNode2 = getLastChildOfType(nameNode, "name");
+        if (nameNode2 != null && nameNode2.hasLabel() && !nameNode2.getLabel().isBlank())
+            return nameNode2.getLabel();
+        return null;
     }
 }
 

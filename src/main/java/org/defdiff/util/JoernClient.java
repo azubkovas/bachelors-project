@@ -95,7 +95,16 @@ public class JoernClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return getNodeQueryOfRequiredType(node, requiredType.getJoernName(), node.getLabel());
+        String name = node.getLabel();
+        if (requiredType == NodeType.CALL && node.getParent().getType().name.equals("expr") &&
+                node.getParent().getChildren().size() == 2 &&
+                node.getParent().getChild(0).getType().name.equals("operator")
+                && node.getParent().getChild(0).getLabel().equals("new"))
+            name = "<init>";
+        else if (requiredType == NodeType.METHOD && node.getType().name.equals("constructor")) {
+            name = "<init>";
+        }
+        return getNodeQueryOfRequiredType(node, requiredType.getJoernName(), name);
     }
 
     private static String getNodeQueryOfRequiredType(Tree node, String joernTypeName, String nameToFilterOn) {
@@ -104,7 +113,7 @@ public class JoernClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return "cpg.%s.name(\"%s\").where(%s)".formatted(joernTypeName, nameToFilterOn, getConditionBasedOnParents(node));
+        return "cpg.%s.nameExact(\"%s\").where(%s)".formatted(joernTypeName, nameToFilterOn, getConditionBasedOnParents(node));
     }
 
     public static String getConditionBasedOnParents(Tree node) {
@@ -119,22 +128,24 @@ public class JoernClient {
                     break;
                 case "function":
                     name = parent.getLabel();
-                    steps.add(".astParent.isMethod.name(\"%s\")".formatted(name));
+                    steps.add(".astParent.isMethod.nameExact(\"%s\")".formatted(name));
                     break;
                 case "constructor":
-                    steps.add(".astParent.isMethod.name(\"<init>\")");
+                    steps.add(".astParent.isMethod.nameExact(\"<init>\")");
                     break;
                 case "class":
-                    if (!steps.isEmpty()) {
-                        assert steps.get(steps.size() - 1).equals(".astParent.isBlock");
+                    if (!steps.isEmpty() && steps.get(steps.size() - 1).equals(".astParent.isBlock")) {
                         steps.remove(steps.size() - 1);
                     }
-                    name = GumTreeClient.getFirstChildOfType(parent, "name").getLabel();
-                    steps.add(".astParent.isTypeDecl.name(\"%s\")".formatted(name));
+                    name = parent.getLabel();
+                    if (GumTreeClient.getFirstParentOfType(parent, "class") != null) {
+                        name = GumTreeClient.getFirstParentOfType(parent, "class").getLabel() + "$" + name;
+                    }
+                    steps.add(".astParent.isTypeDecl.nameExact(\"%s\")".formatted(name));
                     break;
                 case "call":
                     name = parent.getLabel();
-                    steps.add(".astParent.isCall.name(\"%s\")".formatted(name));
+                    steps.add(".astParent.isCall.nameExact(\"%s\")".formatted(name));
                     break;
                 case "if":
                     steps.add(".astParent.isControlStructure.controlStructureType(\"IF\")");
@@ -146,7 +157,7 @@ public class JoernClient {
                     steps.add(".astParent.isControlStructure.controlStructureType(\"WHILE\")");
                     break;
                 case "for":
-                    steps.add(".astParent.isControlStructure.controlStructureType(\"FOR\")");
+                    steps.add(".astParent.isControlStructure.controlStructureType(\"FOR\", \"WHILE\")");
                     break;
                 case "try":
                     steps.add(".astParent.isControlStructure.controlStructureType(\"TRY\")");
@@ -158,14 +169,20 @@ public class JoernClient {
                         assert pos != -1;
                         steps.add(".order(%d).astParent.isCall".formatted((pos == 0) ? 1 : 2));
                     } else if (operator != null && operator.getLabel().equals("!")) {
-                        steps.add(".astParent.isCall.name(\"<operator>.logicalNot\")");
+                        steps.add(".astParent.isCall.nameExact(\"<operator>.logicalNot\")");
                     }
                     break;
                 case "return":
                     steps.add(".astParent.isReturn");
                     break;
                 case "init":
-                    steps.add(".astParent.isCall");
+                    if (!(parent.getChildren().size() == 1 &&
+                            parent.getChild(0).getType().name.equals("expr") &&
+                            parent.getChild(0).getChildren().size() == 2 &&
+                            parent.getChild(0).getChild(0).getType().name.equals("operator") &&
+                            parent.getChild(0).getChild(0).getLabel().equals("new"))) {
+                        steps.add(".astParent.isCall");
+                    }
                     break;
             }
         }
@@ -183,6 +200,7 @@ public class JoernClient {
         getInstance().executeQuery("""
                 if (openForInputPath("%s").isEmpty) {
                       importCode("%s")
+                      save
                    }""".formatted(currentPath.toString(), currentPath.toString()));
         this.currentPath = currentPath;
     }

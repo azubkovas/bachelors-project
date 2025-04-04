@@ -3,7 +3,9 @@ package org.defdiff.deflang.cond;
 import org.defdiff.deflang.VariableContainer;
 import org.defdiff.deflang.VariableValue;
 import org.defdiff.deflang.cond.eval.Variable;
+import org.defdiff.deflang.nodepattern.NodeType;
 import org.defdiff.util.DiffData;
+import org.defdiff.util.GumTreeClient;
 import org.defdiff.util.JoernClient;
 
 import java.io.IOException;
@@ -18,20 +20,44 @@ public class RefCondition extends Condition {
     }
 
     @Override
-    public Boolean evaluate(VariableContainer  variables, DiffData diffData) {
+    public Boolean evaluate(VariableContainer variables, DiffData diffData) {
         VariableValue refererVal = (VariableValue) referer.evaluate(variables, diffData);
         VariableValue refereeVal = (VariableValue) referee.evaluate(variables, diffData);
         assert (refererVal != null && refereeVal != null);
         String refererQuery = refererVal.getCorrespondingPattern().getJoernQuery(refererVal.getCorrespondingNode());
         String refereeQuery = refereeVal.getCorrespondingPattern().getJoernQuery(refereeVal.getCorrespondingNode());
-        String funcName = switch (refererVal.getCorrespondingPattern().getNodeType()) {
-            case IDENTIFIER -> "refsTo";
-            case CALL -> "callee";
-            case FIELD_ACCESS -> "referencedMember";
+        String query = switch (refererVal.getCorrespondingPattern().getNodeType()) {
+            case IDENTIFIER -> refererQuery + ".%s.toSet == ".formatted("refsTo") + refereeQuery + ".toSet";
+            case CALL -> {
+                String superClass = GumTreeClient.getSuperClass(GumTreeClient.getFirstParentOfType(refererVal.getCorrespondingNode(), "class"));
+                if (superClass == null) {
+                    superClass = "";
+                }
+                yield """
+                        {
+                            val call = %s.l;
+                            val method = %s.l;
+                            val potentialSuperType = "%s";
+                            def checkRef(call: List[io.shiftleft.codepropertygraph.generated.nodes.Call], method: List[io.shiftleft.codepropertygraph.generated.nodes.Method]): Boolean = {
+                                if (call.methodFullName.toSet == method.fullName.toSet)
+                                    return true;
+                                return (
+                                    (call.method.typeDecl.inheritsFromTypeFullName.toSet == method.typeDecl.fullName.toSet || method.typeDecl.name.toSet == Set(potentialSuperType)) &&
+                                    call.name.toSet.size == 1 &&
+                                    method.nameExact(call.name.head).nonEmpty &&
+                                    call.head.typeFullName == method.head.methodReturn.typeFullName &&
+                                    call.head.argument.typ.l.tail == method.head.parameter.typ.l.tail
+                                )
+                            }
+                            if (call.isEmpty || method.isEmpty) false else checkRef(call, method)
+                        }
+                        """.formatted(refererQuery, refereeQuery, superClass);
+            }
+            case FIELD_ACCESS -> refererQuery + ".%s.toSet == ".formatted("referencedMember") + refereeQuery + ".toSet";
             default -> throw new RuntimeException("Unsupported node type");
         };
         try {
-            return JoernClient.getInstance().executeQuery(refererQuery + ".%s.toSet == ".formatted(funcName) + refereeQuery + ".toSet").equals("true");
+            return JoernClient.getInstance().executeQuery(query).equals("true");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

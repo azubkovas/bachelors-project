@@ -14,10 +14,10 @@ compoundDefinition: '{' simpleDefinition (';' simpleDefinition)* '}';
 simpleDefinition: changePattern ('|' condition)?;
 
 changePattern
-    : 'INSERT' nodePattern 'INTO' nodePattern   #InsertPattern
+    : 'INSERT' nodePattern 'INTO' nodePattern ('AT' (NUMBER | ID))?   #InsertPattern
     | 'DELETE' nodePattern                      #DeletePattern
     | 'UPDATE' nodePattern ID '->' ID           #UpdatePattern
-    | 'MOVE' nodePattern 'FROM' nodePattern 'TO' nodePattern       #MovePattern
+    | 'MOVE' nodePattern 'FROM' nodePattern 'TO' nodePattern  ('AT' (NUMBER | ID))?     #MovePattern
     ;
 
 nodePattern
@@ -36,8 +36,14 @@ nodePattern
     | 'EXPR'            #ExprPattern
     | 'TYPE'            #TypePattern
     | 'PARAMETERS'      #ParametersPattern
+    | 'ARGUMENTS'       #ArgumentsPattern
+    | 'ARGUMENT'        #ArgumentPattern
+    | 'PARAMETER'       #ParameterPattern
+    | 'CONTROL STRUCTURE' ('(' controlStructureType ')')? #ControlStructurePattern
     | 'ASSIGNMENT(' nodePattern '=' nodePattern ')'      #AssignmentPattern
     ;
+
+controlStructureType: 'IF' | 'ELSE' | 'WHILE' | 'FOR' | 'DO WHILE' | 'SWITCH' | 'TRY' | 'CATCH' | 'FINALLY';
 
 
 condition
@@ -49,6 +55,7 @@ condition
     | 'NOT' condition                       #NotCondition
     | evaluatable 'REFERS TO' evaluatable                     #RefersToCondition
     | evaluatable 'IS SETTER FOR' evaluatable                            #SetterCondition
+    | evaluatable 'IS GETTER FOR' evaluatable                            #GetterCondition
     ;
 
 evaluatable

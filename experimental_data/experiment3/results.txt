@@ -38,6 +38,7 @@ add getter (getPreemptiveAuthentication)
 add setter (setPreemptiveAuthentication)
 DETECTED:
 add setter (setPreemptiveAuthentication)
+add getter (getPreemptiveAuthentication)
 RESULT:
 2/2
 
@@ -116,43 +117,39 @@ method call API change (Http11Protocol.createProcessor())
 RESULT:
 10/11
 
-todo: probably delete ------------------------------
 05c84ff8304a69a30b251f207a7b93c2c882564d (CVE-2013-4590):
 GT:
 method call API change (java/org/apache/catalina/ant/ValidatorTask.execute())
 add setter (<org.apache.catalina.core.StandardContext: void setXmlBlockExternal(boolean)>)
 add getter (<org.apache.catalina.core.StandardContext: boolean getXmlBlockExternal()>)
-method call API change (<org.apache.catalina.startup.ContextConfig: void createWebXmlDigester(boolean,boolean)>)
-method call API change (<org.apache.catalina.startup.ContextConfig: void createWebXmlDigester(boolean,boolean)>)
-method call API change (<org.apache.catalina.startup.TldConfig: org.apache.tomcat.util.digester.Digester createTldDigester(boolean)>)
-method call API change (<org.apache.catalina.startup.TldConfig: org.apache.tomcat.util.digester.Digester createTldDigester(boolean)>)
-method call API change (<org.apache.catalina.startup.TldConfig: void init()>)
+method call API change (<org.apache.catalina.startup.ContextConfig: void init()>)
 add setter (org.apache.jasper.JspC: void setBlockExternal(boolean) )
 add getter (org.apache.jasper.JspC: boolean isBlockExternal() )
+method call API change <org.apache.jasper.JspC: void initServletContext(java.lang.ClassLoader)>
 method call API change (<org.apache.jasper.compiler.ImplicitTagLibraryInfo: void <init>(org.apache.jasper.JspCompilationContext,org.apache.jasper.compiler.ParserController,org.apache.jasper.compiler.PageInfo,java.lang.String,java.lang.String,org.apache.jasper.compiler.ErrorDispatcher)>
-method call API change (<org.apache.jasper.compiler.JspConfig: void processWebDotXml()>)
 variable set (<org.apache.jasper.compiler.JspDocumentParser: void <init>(org.apache.jasper.compiler.ParserController,java.lang.String,boolean,boolean)>)
-method call API change (<org.apache.jasper.compiler.TagLibraryInfoImpl: void parseTLD(java.lang.String,java.io.InputStream,org.apache.jasper.compiler.JarResource)>)
-method call API change (<org.apache.jasper.compiler.TagPluginManager: void loadTagPlugins(org.apache.jasper.compiler.ErrorDispatcher,java.io.InputStream)>)
-method call API change (<org.apache.jasper.compiler.TldLocationsCache: void tldScanWebXml())
-method call API change (<org.apache.jasper.compiler.TldLocationsCache: void tldScanStream(java.lang.String,java.lang.String,java.io.InputStream)>)
-variable set (<org.apache.jasper.xmlparser.ParserUtils: void <init>(boolean,boolean)>',)
-variable set (<org.apache.jasper.xmlparser.ParserUtils: void <init>(boolean,boolean)>',)
+method call API change (<org.apache.jasper.compiler.TagPluginManager: void init(ErrorDispatcher err)>)
+method call API change <org.apache.jasper.servlet.JasperInitializer: void onStartup(java.util.Set,javax.servlet.ServletContext)>
 variable set (org.apache.tomcat.util.descriptor.LocalResolver: void init(java.util.Map,java.util.Map,boolean))
 method call API change (<org.apache.tomcat.util.descriptor.tagplugin.TagPluginParser: void <init>(javax.servlet.ServletContext)>)
-method call API change (TldParser(boolean namespaceAware, boolean validation, boolean blockExternal))
 method call API change (TldParser(boolean namespaceAware, boolean validation, RuleSet ruleSet, boolean blockExternal))
 method call API change (WebXmlParser(boolean namespaceAware, boolean validation, boolean blockExternal))
 method call API change (WebXmlParser(boolean namespaceAware, boolean validation, boolean blockExternal))
+method call API change <org.apache.jasper.servlet.TldScanner: void <init>(javax.servlet.ServletContext,boolean,boolean)>
+method call API change <org.apache.jasper.servlet.JspCServletContext: org.apache.tomcat.util.descriptor.web.WebXml buildMergedWebXml()>
+method call API change <org.apache.jasper.compiler.TldCache: void <init>(javax.servlet.ServletContext,java.util.Map,java.util.Map)>
 DETECTED:
-add setter (org.apache.jasper.JspC: void setBlockExternal(boolean) )
-variable set (org.apache.tomcat.util.descriptor.LocalResolver: void init(java.util.Map,java.util.Map,boolean))
-variable set (<org.apache.jasper.compiler.JspDocumentParser: void <init>(org.apache.jasper.compiler.ParserController,java.lang.String,boolean,boolean)>)
 add setter (<org.apache.catalina.core.StandardContext: void setXmlBlockExternal(boolean)>)
 add getter (<org.apache.catalina.core.StandardContext: boolean getXmlBlockExternal()>)
+add setter (org.apache.jasper.JspC: void setBlockExternal(boolean) )
 add getter (org.apache.jasper.JspC: boolean isBlockExternal() )
+method call API change <org.apache.jasper.servlet.JasperInitializer: void onStartup(java.util.Set,javax.servlet.ServletContext)>
+variable set (<org.apache.jasper.compiler.JspDocumentParser: void <init>(org.apache.jasper.compiler.ParserController,java.lang.String,boolean,boolean)>)
+method call API change (java/org/apache/catalina/ant/ValidatorTask.execute())
+variable set (org.apache.tomcat.util.descriptor.LocalResolver: void init(java.util.Map,java.util.Map,boolean))
+method call API change (TldParser(boolean namespaceAware, boolean validation, RuleSet ruleSet, boolean blockExternal))
 RESULT:
-6/25
+9/19
 
 593a2447e6ebe465585cfa07e93b5635dffa1c70 (CVE-2014-0227):
 GT:
@@ -192,8 +189,3 @@ method call API change (Http11Nio2Processor(...))
 method call API change (Http11Nio2Protocol.createProcessor())
 RESULT:
 11/14
-
-
-(tomcat55)0314fe7743cb72e469cb395ccaaf2793a2ea0355 (CVE-2012-0022)
-
- (CVE-2015-5345):

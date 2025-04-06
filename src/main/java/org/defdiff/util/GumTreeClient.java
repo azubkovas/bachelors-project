@@ -1,28 +1,18 @@
 package org.defdiff.util;
 
-import com.github.gumtreediff.actions.ChawatheScriptGenerator;
 import com.github.gumtreediff.actions.Diff;
 import com.github.gumtreediff.actions.EditScriptGenerator;
 import com.github.gumtreediff.actions.SimplifiedChawatheScriptGenerator;
 import com.github.gumtreediff.client.Run;
 import com.github.gumtreediff.gen.TreeGenerators;
 import com.github.gumtreediff.matchers.*;
-import com.github.gumtreediff.matchers.heuristic.IdMatcher;
-import com.github.gumtreediff.matchers.heuristic.cd.ChangeDistillerBottomUpMatcher;
-import com.github.gumtreediff.matchers.heuristic.gt.GreedyBottomUpMatcher;
-import com.github.gumtreediff.matchers.heuristic.gt.GreedySubtreeMatcher;
-import com.github.gumtreediff.matchers.optimal.rted.RtedMatcher;
-import com.github.gumtreediff.matchers.optimal.zs.ZsMatcher;
-import com.github.gumtreediff.matchers.optimizations.CrossMoveMatcherThetaF;
 import com.github.gumtreediff.tree.DefaultTree;
 import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.tree.TreeContext;
 import com.github.gumtreediff.utils.Pair;
 import com.github.gumtreediff.tree.TypeSet;
-import org.defdiff.deflang.nodepattern.NodeType;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,6 +104,21 @@ public class GumTreeClient {
     }
 
     private static void mergeName(Tree node) {
+        if (node.getType().name.equals("call")) {
+            Tree nameNode = getFirstChildOfType(node, "name");
+            if (nameNode != null) {
+                StringBuilder label = new StringBuilder(nameNode.getLabel());
+                if (!nameNode.getChildren().isEmpty()) {
+                    label = new StringBuilder();
+                    label.append(getLastChildOfType(nameNode, "name").getLabel());
+                }
+                node.setLabel(label.toString());
+                List<Tree> children = node.getChildren();
+                children.remove(nameNode);
+                node.setChildren(children);
+            }
+            return;
+        }
         Tree nameNode = getFirstChildOfType(node, "name");
         if (nameNode != null) {
             StringBuilder label = new StringBuilder(nameNode.getLabel());

@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'antlr'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'bachelors.project'
@@ -37,4 +38,16 @@ generateGrammarSource {
 
 test {
     useJUnitPlatform()
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    mergeServiceFiles()
+    manifest {
+        attributes 'Main-Class': 'org.defdiff.Main'
+    }
+}
+
+tasks.build {
+    dependsOn shadowJar
 }
